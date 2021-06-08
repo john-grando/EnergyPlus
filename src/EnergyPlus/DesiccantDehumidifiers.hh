@@ -242,7 +242,7 @@ namespace DesiccantDehumidifiers {
     // Functions
 
     void SimDesiccantDehumidifier(EnergyPlusData &state,
-                                  std::string const &CompName, // name of the dehumidifier unit
+                                  std::string_view CompName, // name of the dehumidifier unit
                                   bool FirstHVACIteration,     // TRUE if 1st HVAC simulation of system timestep
                                   int &CompIndex);
 

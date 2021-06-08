@@ -77,7 +77,7 @@ namespace HVACFan {
 
     int getFanObjectVectorIndex( // lookup vector index for fan object name in object array EnergyPlus::HVACFan::fanObjs
         EnergyPlusData &state,
-        std::string const &objectName, // IDF name in input
+        std::string_view objectName, // IDF name in input
         bool const ErrorCheck)
     {
         int index = -1;
@@ -91,19 +91,19 @@ namespace HVACFan {
                     // TODO throw warning?
                     index = -1;
                     ShowSevereError(state,
-                                    "getFanObjectVectorIndex: Found duplicate Fan:SystemModel inputs of name =" + objectName + ". Check inputs");
+                                    "getFanObjectVectorIndex: Found duplicate Fan:SystemModel inputs of name =" + std::string{objectName} + ". Check inputs");
                 }
             }
         }
         if (!found && ErrorCheck) {
-            ShowSevereError(state, "getFanObjectVectorIndex: did not find Fan:SystemModel name =" + objectName + ". Check inputs");
+            ShowSevereError(state, "getFanObjectVectorIndex: did not find Fan:SystemModel name =" + std::string{objectName} + ". Check inputs");
         }
         return index;
     }
 
     bool checkIfFanNameIsAFanSystem( // look up to see if input contains a Fan:SystemModel with the name (for use before object construction
         EnergyPlusData &state,
-        std::string const &objectName)
+        std::string_view objectName)
     {
 
         int testNum = state.dataInputProcessing->inputProcessor->getObjectItemNum(state, "Fan:SystemModel", objectName);

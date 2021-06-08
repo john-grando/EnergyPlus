@@ -98,7 +98,7 @@ namespace EnergyPlus {
 // input file and (2) the simulation input data file will be processed
 // with the data therein being supplied to the actual simulation routines.
 
-static std::string const BlankString;
+static constexpr std::string_view BlankString;
 
 using json = nlohmann::json;
 
@@ -108,7 +108,7 @@ InputProcessor::InputProcessor() : idf_parser(std::unique_ptr<IdfParser>(new Idf
     schema = json::from_cbor(embeddedEpJSONSchema.first, embeddedEpJSONSchema.second);
 
     const json &loc = schema["properties"];
-    caseInsensitiveObjectMap.reserve(loc.size());
+//    caseInsensitiveObjectMap.reserve(loc.size());
     for (auto it = loc.begin(); it != loc.end(); ++it) {
         caseInsensitiveObjectMap.emplace(convertToUpper(it.key()), it.key());
     }
@@ -212,7 +212,7 @@ void InputProcessor::initializeMaps()
 {
     unusedInputs.clear();
     objectCacheMap.clear();
-    objectCacheMap.reserve(epJSON.size());
+//    objectCacheMap.reserve(epJSON.size());
     auto const &schema_properties = schema.at("properties");
 
     for (auto epJSON_iter = epJSON.begin(); epJSON_iter != epJSON.end(); ++epJSON_iter) {
@@ -425,7 +425,7 @@ int InputProcessor::getNumSectionsFound(std::string const &SectionWord)
     return static_cast<int>(SectionWord_iter.value().size());
 }
 
-int InputProcessor::getNumObjectsFound(EnergyPlusData &state, std::string const &ObjectWord)
+int InputProcessor::getNumObjectsFound(EnergyPlusData &state, std::string_view const ObjectWord)
 {
 
     // FUNCTION INFORMATION:
@@ -458,7 +458,7 @@ int InputProcessor::getNumObjectsFound(EnergyPlusData &state, std::string const 
     if (schema["properties"].find(ObjectWord) == schema["properties"].end()) {
         auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
         if (tmp_umit == caseInsensitiveObjectMap.end()) {
-            ShowWarningError(state, "Requested Object not found in Definitions: " + ObjectWord);
+            ShowWarningError(state, "Requested Object not found in Definitions: " + std::string{ObjectWord});
         }
     }
     return 0;
@@ -709,7 +709,7 @@ void InputProcessor::setObjectItemValue(EnergyPlusData &state,
 }
 
 void InputProcessor::getObjectItem(EnergyPlusData &state,
-                                   std::string const &Object,
+                                   std::string_view const Object,
                                    int const Number,
                                    Array1S_string Alphas,
                                    int &NumAlphas,
@@ -812,7 +812,7 @@ void InputProcessor::getObjectItem(EnergyPlusData &state,
         auto const &field_info = legacy_idd_field_info.find(field);
         auto const &field_info_val = field_info.value();
         if (field_info == legacy_idd_field_info.end()) {
-            ShowFatalError(state, "Could not find field = \"" + field + "\" in \"" + Object + "\" in epJSON Schema.");
+            ShowFatalError(state, "Could not find field = \"" + field + "\" in \"" + std::string{Object} + "\" in epJSON Schema.");
         }
 
         bool within_idf_fields = (i < maxFields.max_fields);
@@ -868,7 +868,7 @@ void InputProcessor::getObjectItem(EnergyPlusData &state,
                     auto const &field_info_val = field_info.value();
 
                     if (field_info == legacy_idd_field_info.end()) {
-                        ShowFatalError(state, "Could not find field = \"" + field_name + "\" in \"" + Object + "\" in epJSON Schema.");
+                        ShowFatalError(state, "Could not find field = \"" + field_name + "\" in \"" + std::string{Object} + "\" in epJSON Schema.");
                     }
 
                     bool within_idf_extensible_fields = (extensible_count < maxFields.max_extensible_fields);
@@ -897,7 +897,7 @@ void InputProcessor::getObjectItem(EnergyPlusData &state,
     Status = 1;
 }
 
-int InputProcessor::getIDFObjNum(EnergyPlusData &state, std::string const &Object, int const Number)
+int InputProcessor::getIDFObjNum(EnergyPlusData &state, std::string_view const Object, int const Number)
 {
     // Given the number (index) of an object in JSON order, return it's number in original idf order
 
@@ -940,7 +940,7 @@ int InputProcessor::getIDFObjNum(EnergyPlusData &state, std::string const &Objec
     return idfOrderNumber;
 }
 
-int InputProcessor::getJSONObjNum(EnergyPlusData &state, std::string const &Object, int const Number)
+int InputProcessor::getJSONObjNum(EnergyPlusData &state, std::string_view const Object, int const Number)
 {
     // Given the number (index) of an object in original idf order, return it's number in JSON order
 
@@ -984,8 +984,8 @@ int InputProcessor::getJSONObjNum(EnergyPlusData &state, std::string const &Obje
 }
 
 int InputProcessor::getObjectItemNum(EnergyPlusData &state,
-                                     std::string const &ObjType, // Object Type (ref: IDD Objects)
-                                     std::string const &ObjName  // Name of the object type
+                                     std::string_view ObjType, // Object Type (ref: IDD Objects)
+                                     std::string_view ObjName  // Name of the object type
 )
 {
     // PURPOSE OF THIS SUBROUTINE:
@@ -1021,9 +1021,9 @@ int InputProcessor::getObjectItemNum(EnergyPlusData &state,
 }
 
 int InputProcessor::getObjectItemNum(EnergyPlusData &state,
-                                     std::string const &ObjType,     // Object Type (ref: IDD Objects)
-                                     std::string const &NameTypeVal, // Object "name" field type ( used as search key )
-                                     std::string const &ObjName      // Name of the object type
+                                     std::string_view ObjType,     // Object Type (ref: IDD Objects)
+                                     std::string_view NameTypeVal, // Object "name" field type ( used as search key )
+                                     std::string_view ObjName      // Name of the object type
 )
 {
     // PURPOSE OF THIS SUBROUTINE:
@@ -1062,9 +1062,9 @@ int InputProcessor::getObjectItemNum(EnergyPlusData &state,
 
 void InputProcessor::rangeCheck(EnergyPlusData &state,
                                 bool &ErrorsFound,                       // Set to true if error detected
-                                std::string const &WhatFieldString,      // Descriptive field for string
-                                std::string const &WhatObjectString,     // Descriptive field for object, Zone Name, etc.
-                                std::string const &ErrorLevel,           // 'Warning','Severe','Fatal')
+                                std::string_view WhatFieldString,      // Descriptive field for string
+                                std::string_view WhatObjectString,     // Descriptive field for object, Zone Name, etc.
+                                std::string_view ErrorLevel,           // 'Warning','Severe','Fatal')
                                 Optional_string_const LowerBoundString,  // String for error message, if applicable
                                 Optional_bool_const LowerBoundCondition, // Condition for error condition, if applicable
                                 Optional_string_const UpperBoundString,  // String for error message, if applicable
@@ -1102,7 +1102,7 @@ void InputProcessor::rangeCheck(EnergyPlusData &state,
         ConvertCaseToUpper(ErrorLevel, ErrorString);
         Message1 = WhatObjectString;
         if (present(WhatObjectName)) Message1 += "=\"" + WhatObjectName + "\", out of range data";
-        Message2 = "Out of range value field=" + WhatFieldString;
+        Message2 = "Out of range value field=" + std::string{WhatFieldString};
         if (present(ValueString)) Message2 += ", Value=[" + ValueString + ']';
         Message2 += ", range={";
         if (present(LowerBoundString)) Message2 += LowerBoundString;
@@ -1194,7 +1194,7 @@ void InputProcessor::getMaxSchemaArgs(int &NumArgs, int &NumAlpha, int &NumNumer
 }
 
 void InputProcessor::getObjectDefMaxArgs(EnergyPlusData &state,
-                                         std::string const &ObjectWord, // Object for definition
+                                         std::string_view const ObjectWord, // Object for definition
                                          int &NumArgs,                  // How many arguments (max) this Object can have
                                          int &NumAlpha,                 // How many Alpha arguments (max) this Object can have
                                          int &NumNumeric                // How many Numeric arguments (max) this Object can have
@@ -1212,7 +1212,7 @@ void InputProcessor::getObjectDefMaxArgs(EnergyPlusData &state,
     if (schema["properties"].find(ObjectWord) == schema["properties"].end()) {
         auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
         if (tmp_umit == caseInsensitiveObjectMap.end()) {
-            ShowSevereError(state, "getObjectDefMaxArgs: Did not find object=\"" + ObjectWord + "\" in list of objects.");
+            ShowSevereError(state, "getObjectDefMaxArgs: Did not find object=\"" + std::string{ObjectWord} + "\" in list of objects.");
             return;
         }
         object = &schema["properties"][tmp_umit->second];
@@ -1225,7 +1225,7 @@ void InputProcessor::getObjectDefMaxArgs(EnergyPlusData &state,
     if (epJSON.find(ObjectWord) == epJSON.end()) {
         auto tmp_umit = caseInsensitiveObjectMap.find(convertToUpper(ObjectWord));
         if (tmp_umit == caseInsensitiveObjectMap.end()) {
-            ShowSevereError(state, "getObjectDefMaxArgs: Did not find object=\"" + ObjectWord + "\" in list of objects.");
+            ShowSevereError(state, "getObjectDefMaxArgs: Did not find object=\"" + std::string{ObjectWord} + "\" in list of objects.");
             return;
         }
         objects = &epJSON[tmp_umit->second];
@@ -1568,7 +1568,7 @@ void InputProcessor::preProcessorCheck(EnergyPlusData &state, bool &PreP_Fatal) 
     NumPrePM = getNumObjectsFound(state, state.dataIPShortCut->cCurrentModuleObject);
     if (NumPrePM > 0) {
         getObjectDefMaxArgs(state, state.dataIPShortCut->cCurrentModuleObject, NumParams, NumAlphas, NumNumbers);
-        state.dataIPShortCut->cAlphaArgs({1, NumAlphas}) = BlankString;
+        state.dataIPShortCut->cAlphaArgs({1, NumAlphas}) = std::string{};
         for (CountP = 1; CountP <= NumPrePM; ++CountP) {
             getObjectItem(state,
                           state.dataIPShortCut->cCurrentModuleObject,
@@ -1661,15 +1661,15 @@ void InputProcessor::preScanReportingVariables(EnergyPlusData &state)
     // EnergyManagementSystem:OutputVariable
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const OutputVariable("Output:Variable");
-    static std::string const MeterCustom("Meter:Custom");
-    static std::string const MeterCustomDecrement("Meter:CustomDecrement");
-    static std::string const OutputTableMonthly("Output:Table:Monthly");
-    static std::string const OutputTableAnnual("Output:Table:Annual");
-    static std::string const OutputTableTimeBins("Output:Table:TimeBins");
-    static std::string const OutputTableSummaries("Output:Table:SummaryReports");
-    static std::string const EMSSensor("EnergyManagementSystem:Sensor");
-    static std::string const EMSOutputVariable("EnergyManagementSystem:OutputVariable");
+    static constexpr std::string_view OutputVariable("Output:Variable");
+    static constexpr std::string_view MeterCustom("Meter:Custom");
+    static constexpr std::string_view MeterCustomDecrement("Meter:CustomDecrement");
+    static constexpr std::string_view OutputTableMonthly("Output:Table:Monthly");
+    static constexpr std::string_view OutputTableAnnual("Output:Table:Annual");
+    static constexpr std::string_view OutputTableTimeBins("Output:Table:TimeBins");
+    static constexpr std::string_view OutputTableSummaries("Output:Table:SummaryReports");
+    static constexpr std::string_view EMSSensor("EnergyManagementSystem:Sensor");
+    static constexpr std::string_view EMSOutputVariable("EnergyManagementSystem:OutputVariable");
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     std::string extension_key;

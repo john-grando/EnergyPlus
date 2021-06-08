@@ -499,7 +499,7 @@ namespace OutputReportTabular {
 
     void GetInputTabularTimeBins(EnergyPlusData &state);
 
-    bool warningAboutKeyNotFound(EnergyPlusData &state, int foundIndex, int inObjIndex, std::string const &moduleName);
+    bool warningAboutKeyNotFound(EnergyPlusData &state, int foundIndex, int inObjIndex, std::string_view const moduleName);
 
     void GetInputTabularStyle(EnergyPlusData &state);
 
@@ -737,7 +737,7 @@ namespace OutputReportTabular {
                                bool &produce_Tab,
                                bool &produce_Sql);
 
-    std::string MakeAnchorName(std::string const &reportString, std::string const &objectString);
+    std::string MakeAnchorName(std::string_view const reportString, std::string_view const objectString);
 
     std::string InsertCurrencySymbol(EnergyPlusData &state,
                                      std::string const &inString, // Input String

@@ -198,7 +198,7 @@ namespace WindTurbine {
         using ScheduleManager::GetScheduleIndex;
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        static std::string const CurrentModuleObject("Generator:WindTurbine");
+        static constexpr std::string_view CurrentModuleObject("Generator:WindTurbine");
         Real64 const SysEffDefault(0.835); // Default value of overall system efficiency
         Real64 const MaxTSR(12.0);         // Maximum tip speed ratio
         Real64 const DefaultPC(0.25);      // Default power coefficient
@@ -257,7 +257,7 @@ namespace WindTurbine {
                 state.dataWindTurbine->WindTurbineSys(WindTurbineNum).SchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(2));
                 if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).SchedPtr == 0) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(2) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(2) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(2) + "\" not found.");
                     ErrorsFound = true;
                 }
@@ -271,7 +271,7 @@ namespace WindTurbine {
                     state.dataWindTurbine->WindTurbineSys(WindTurbineNum).rotorType = RotorType::VAWT;
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(3) + "\".");
                     ErrorsFound = true;
                 }
@@ -290,7 +290,7 @@ namespace WindTurbine {
                     state.dataWindTurbine->WindTurbineSys(WindTurbineNum).controlType = ControlType::VSVP;
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(4) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(4) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(4) + "\".");
                     ErrorsFound = true;
                 }
@@ -301,7 +301,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).RatedRotorSpeed <= 0.0) {
                 if (lNumericBlanks(1)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(1) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(1) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -318,7 +318,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).RotorDiameter <= 0.0) {
                 if (lNumericBlanks(2)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(2) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(2) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -335,7 +335,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).RotorHeight <= 0.0) {
                 if (lNumericBlanks(3)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(3) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(3) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -363,7 +363,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).RatedPower == 0.0) {
                 if (lNumericBlanks(5)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(5) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(5) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -380,7 +380,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).RatedWindSpeed == 0.0) {
                 if (lNumericBlanks(6)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(6) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(6) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -398,7 +398,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).CutInSpeed == 0.0) {
                 if (lNumericBlanks(7)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(7) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(7) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -416,7 +416,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).CutOutSpeed == 0.0) {
                 if (lNumericBlanks(8)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(8) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(8) +
                                         " is required but input is blank.");
                 } else if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).CutOutSpeed <=
                            state.dataWindTurbine->WindTurbineSys(WindTurbineNum).RatedWindSpeed) {
@@ -458,7 +458,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).MaxTipSpeedRatio == 0.0) {
                 if (lNumericBlanks(10)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(10) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(10) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -486,7 +486,7 @@ namespace WindTurbine {
                 state.dataWindTurbine->WindTurbineSys(WindTurbineNum).MaxPowerCoeff == 0.0) {
                 if (lNumericBlanks(11)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(11) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(11) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -514,7 +514,7 @@ namespace WindTurbine {
             if (state.dataWindTurbine->WindTurbineSys(WindTurbineNum).LocalAnnualAvgWS == 0.0) {
                 if (lNumericBlanks(12)) {
                     ShowWarningError(state,
-                                     CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(12) +
+                                     std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(12) +
                                          " is necessary for accurate prediction but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -536,7 +536,7 @@ namespace WindTurbine {
                     state.dataWindTurbine->WindTurbineSys(WindTurbineNum).HeightForLocalWS = DefaultH;
                     if (lNumericBlanks(13)) {
                         ShowWarningError(state,
-                                         CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(13) +
+                                         std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(13) +
                                              " is necessary for accurate prediction but input is blank.");
                         ShowContinueError(state, format("...The default value of {:.2R} will be used. for {}", DefaultH, cNumericFields(13)));
                     } else {
@@ -557,7 +557,7 @@ namespace WindTurbine {
                 state.dataWindTurbine->WindTurbineSys(WindTurbineNum).ChordArea == 0.0) {
                 if (lNumericBlanks(14)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(14) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(14) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -575,7 +575,7 @@ namespace WindTurbine {
                 state.dataWindTurbine->WindTurbineSys(WindTurbineNum).DragCoeff == 0.0) {
                 if (lNumericBlanks(15)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(15) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(15) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -593,7 +593,7 @@ namespace WindTurbine {
                 state.dataWindTurbine->WindTurbineSys(WindTurbineNum).LiftCoeff == 0.0) {
                 if (lNumericBlanks(16)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(16) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cNumericFields(16) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
@@ -645,7 +645,7 @@ namespace WindTurbine {
         lAlphaBlanks.deallocate();
         lNumericBlanks.deallocate();
 
-        if (ErrorsFound) ShowFatalError(state, CurrentModuleObject + " errors occurred in input.  Program terminates.");
+        if (ErrorsFound) ShowFatalError(state, std::string{CurrentModuleObject} + " errors occurred in input.  Program terminates.");
 
         for (WindTurbineNum = 1; WindTurbineNum <= state.dataWindTurbine->NumWindTurbines; ++WindTurbineNum) {
             SetupOutputVariable(state,

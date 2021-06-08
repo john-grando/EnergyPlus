@@ -111,7 +111,7 @@ namespace ZoneDehumidifier {
     using namespace ScheduleManager;
 
     void SimZoneDehumidifier(EnergyPlusData &state,
-                             std::string const &CompName,                    // Name of the zone dehumidifier
+                             std::string_view CompName,                    // Name of the zone dehumidifier
                              int const ZoneNum,                              // Number of zone being served
                              [[maybe_unused]] bool const FirstHVACIteration, // TRUE if 1st HVAC simulation of system timestep
                              Real64 &QSensOut,                               // Sensible capacity delivered to zone (W)
@@ -146,7 +146,7 @@ namespace ZoneDehumidifier {
         if (CompIndex == 0) {
             ZoneDehumidNum = UtilityRoutines::FindItemInList(CompName, state.dataZoneDehumidifier->ZoneDehumid);
             if (ZoneDehumidNum == 0) {
-                ShowFatalError(state, "SimZoneDehumidifier: Unit not found= " + CompName);
+                ShowFatalError(state, "SimZoneDehumidifier: Unit not found= " + std::string{CompName});
             }
             CompIndex = ZoneDehumidNum;
         } else {
@@ -204,7 +204,7 @@ namespace ZoneDehumidifier {
 
         // SUBROUTINE PARAMETER DEFINITIONS:
         static constexpr std::string_view RoutineName("GetZoneDehumidifierInput");
-        static std::string const CurrentModuleObject("ZoneHVAC:Dehumidifier:DX");
+        static constexpr std::string_view CurrentModuleObject("ZoneHVAC:Dehumidifier:DX");
         Real64 const RatedInletAirTemp(26.7);
         Real64 const RatedInletAirRH(60.0);
 
@@ -268,7 +268,7 @@ namespace ZoneDehumidifier {
                 if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).SchedPtr == 0) {
                     ShowSevereError(state, cAlphaFields(2) + " not found = " + Alphas(2));
                     ShowContinueError(state,
-                                      "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                                      "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                     ErrorsFound = true;
                 }
             }
@@ -300,7 +300,7 @@ namespace ZoneDehumidifier {
             if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).RatedWaterRemoval <= 0.0) {
                 ShowSevereError(state, cNumericFields(1) + " must be greater than zero.");
                 ShowContinueError(state, format("Value specified = {:.5T}", Numbers(1)));
-                ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                ShowContinueError(state, "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 ErrorsFound = true;
             }
 
@@ -309,7 +309,7 @@ namespace ZoneDehumidifier {
             if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).RatedEnergyFactor <= 0.0) {
                 ShowSevereError(state, cNumericFields(2) + " must be greater than zero.");
                 ShowContinueError(state, format("Value specified = {:.5T}", Numbers(2)));
-                ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                ShowContinueError(state, "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 ErrorsFound = true;
             }
 
@@ -318,7 +318,7 @@ namespace ZoneDehumidifier {
             if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).RatedAirVolFlow <= 0.0) {
                 ShowSevereError(state, cNumericFields(3) + " must be greater than zero.");
                 ShowContinueError(state, format("Value specified = {:.5T}", Numbers(3)));
-                ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                ShowContinueError(state, "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 ErrorsFound = true;
             }
 
@@ -328,12 +328,12 @@ namespace ZoneDehumidifier {
             if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).WaterRemovalCurveIndex == 0) {
                 if (lAlphaBlanks(5)) {
                     ShowSevereError(state,
-                                    std::string{RoutineName} + ':' + CurrentModuleObject + "=\"" + cAlphaFields(5) + "\" is required, missing for " +
+                                    std::string{RoutineName} + ':' + std::string{CurrentModuleObject} + "=\"" + cAlphaFields(5) + "\" is required, missing for " +
                                         cAlphaFields(1) + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 } else {
                     ShowSevereError(state, cAlphaFields(5) + " not found = " + Alphas(5));
                     ShowContinueError(state,
-                                      "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                                      "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 }
                 ErrorsFound = true;
             } else {
@@ -352,7 +352,7 @@ namespace ZoneDehumidifier {
                         state, state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).WaterRemovalCurveIndex, RatedInletAirTemp, RatedInletAirRH);
                     if (CurveVal > 1.10 || CurveVal < 0.90) {
                         ShowWarningError(state, cAlphaFields(5) + " output is not equal to 1.0");
-                        ShowContinueError(state, "(+ or -10%) at rated conditions for " + CurrentModuleObject + " = " + Alphas(1));
+                        ShowContinueError(state, "(+ or -10%) at rated conditions for " + std::string{CurrentModuleObject} + " = " + Alphas(1));
                         ShowContinueError(state, format("Curve output at rated conditions = {:.3T}", CurveVal));
                     }
                 }
@@ -364,12 +364,12 @@ namespace ZoneDehumidifier {
             if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).EnergyFactorCurveIndex == 0) {
                 if (lAlphaBlanks(6)) {
                     ShowSevereError(state,
-                                    std::string{RoutineName} + ':' + CurrentModuleObject + "=\"" + cAlphaFields(6) + "\" is required, missing for " +
+                                    std::string{RoutineName} + ':' + std::string{CurrentModuleObject} + "=\"" + cAlphaFields(6) + "\" is required, missing for " +
                                         cAlphaFields(1) + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 } else {
                     ShowSevereError(state, cAlphaFields(6) + " not found = " + Alphas(6));
                     ShowContinueError(state,
-                                      "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                                      "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 }
                 ErrorsFound = true;
             } else {
@@ -388,7 +388,7 @@ namespace ZoneDehumidifier {
                         state, state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).EnergyFactorCurveIndex, RatedInletAirTemp, RatedInletAirRH);
                     if (CurveVal > 1.10 || CurveVal < 0.90) {
                         ShowWarningError(state, cAlphaFields(6) + " output is not equal to 1.0");
-                        ShowContinueError(state, "(+ or -10%) at rated conditions for " + CurrentModuleObject + " = " + Alphas(1));
+                        ShowContinueError(state, "(+ or -10%) at rated conditions for " + std::string{CurrentModuleObject} + " = " + Alphas(1));
                         ShowContinueError(state, format("Curve output at rated conditions = {:.3T}", CurveVal));
                     }
                 }
@@ -400,12 +400,12 @@ namespace ZoneDehumidifier {
             if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).PartLoadCurveIndex == 0) {
                 if (lAlphaBlanks(7)) {
                     ShowSevereError(state,
-                                    std::string{RoutineName} + ':' + CurrentModuleObject + "=\"" + cAlphaFields(7) + "\" is required, missing for " +
+                                    std::string{RoutineName} + ':' + std::string{CurrentModuleObject} + "=\"" + cAlphaFields(7) + "\" is required, missing for " +
                                         cAlphaFields(1) + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 } else {
                     ShowSevereError(state, cAlphaFields(7) + " not found = " + Alphas(7));
                     ShowContinueError(state,
-                                      "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                                      "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 }
                 ErrorsFound = true;
             } else {
@@ -430,7 +430,7 @@ namespace ZoneDehumidifier {
                 ShowSevereError(state, cNumericFields(5) + " must be greater than " + cNumericFields(4));
                 ShowContinueError(state, format("{} specified = {:.1T}", cNumericFields(5), Numbers(5)));
                 ShowContinueError(state, format("{} specified = {:.1T}", cNumericFields(4), Numbers(4)));
-                ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                ShowContinueError(state, "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 ErrorsFound = true;
             }
 
@@ -440,7 +440,7 @@ namespace ZoneDehumidifier {
             if (state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).OffCycleParasiticLoad < 0.0) {
                 ShowSevereError(state, cNumericFields(6) + " must be >= zero.");
                 ShowContinueError(state, format("Value specified = {:.2T}", Numbers(6)));
-                ShowContinueError(state, "Occurs in " + CurrentModuleObject + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
+                ShowContinueError(state, "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataZoneDehumidifier->ZoneDehumid(ZoneDehumidIndex).Name);
                 ErrorsFound = true;
             }
 
@@ -469,7 +469,7 @@ namespace ZoneDehumidifier {
         lNumericBlanks.deallocate();
 
         if (ErrorsFound) {
-            ShowFatalError(state, std::string{RoutineName} + ':' + CurrentModuleObject + ": Errors found in input.");
+            ShowFatalError(state, std::string{RoutineName} + ':' + std::string{CurrentModuleObject} + ": Errors found in input.");
         }
 
         for (ZoneDehumidIndex = 1; ZoneDehumidIndex <= state.dataZoneDehumidifier->NumDehumidifiers; ++ZoneDehumidIndex) {

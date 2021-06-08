@@ -68,9 +68,9 @@ struct EnergyPlusData;
 
 namespace HVACFan {
 
-    int getFanObjectVectorIndex(EnergyPlusData &state, std::string const &objectName, bool const CheckFlag = true);
+    int getFanObjectVectorIndex(EnergyPlusData &state, std::string_view objectName, bool const CheckFlag = true);
 
-    bool checkIfFanNameIsAFanSystem(EnergyPlusData &state, std::string const &objectName);
+    bool checkIfFanNameIsAFanSystem(EnergyPlusData &state, std::string_view objectName);
 
     class FanSystem
     {

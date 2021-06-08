@@ -138,7 +138,7 @@ namespace CoolTower {
         using WaterManager::SetupTankDemandComponent;
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        static std::string const CurrentModuleObject("ZoneCoolTower:Shower");
+        static constexpr std::string_view CurrentModuleObject("ZoneCoolTower:Shower");
         Real64 const MaximumWaterFlowRate(0.016667); // Maximum limit of water flow rate in m3/s (1000 l/min)
         Real64 const MinimumWaterFlowRate(0.0);      // Minimum limit of water flow rate
         Real64 const MaxHeight(30.0);                // Maximum effective tower height in m
@@ -200,7 +200,7 @@ namespace CoolTower {
             } else {
                 state.dataCoolTower->CoolTowerSys(CoolTowerNum).SchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(2));
                 if (state.dataCoolTower->CoolTowerSys(CoolTowerNum).SchedPtr == 0) {
-                    ShowSevereError(state, CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid data");
+                    ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid data");
                     ShowContinueError(state, "Invalid-Schedule not found " + cAlphaFields(2) + "=\"" + state.dataIPShortCut->cAlphaArgs(2) + "\".");
                     ErrorsFound = true;
                 }
@@ -211,11 +211,11 @@ namespace CoolTower {
             if (state.dataCoolTower->CoolTowerSys(CoolTowerNum).ZonePtr == 0) {
                 if (lAlphaBlanks(3)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(3) + "\" not found.");
                 }
                 ErrorsFound = true;
@@ -242,7 +242,7 @@ namespace CoolTower {
                     state.dataCoolTower->CoolTowerSys(CoolTowerNum).FlowCtrlType = FlowCtrlEnum::WindDriven;
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(5) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(5) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(5) + "\".");
                     ErrorsFound = true;
                 }
@@ -252,11 +252,11 @@ namespace CoolTower {
             if (state.dataCoolTower->CoolTowerSys(CoolTowerNum).PumpSchedPtr == 0) {
                 if (lAlphaBlanks(6)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(6) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(6) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(6) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(6) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(6) + "\" not found.");
                 }
                 ErrorsFound = true;
@@ -428,7 +428,7 @@ namespace CoolTower {
         lAlphaBlanks.deallocate();
         lNumericBlanks.deallocate();
 
-        if (ErrorsFound) ShowFatalError(state, CurrentModuleObject + " errors occurred in input.  Program terminates.");
+        if (ErrorsFound) ShowFatalError(state, std::string{CurrentModuleObject} + " errors occurred in input.  Program terminates.");
 
         for (CoolTowerNum = 1; CoolTowerNum <= state.dataCoolTower->NumCoolTowers; ++CoolTowerNum) {
             SetupOutputVariable(state,

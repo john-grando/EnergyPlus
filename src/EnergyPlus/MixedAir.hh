@@ -134,14 +134,14 @@ namespace MixedAir {
 
     // Parameters below (CMO - Current Module Object.  used primarily in Get Inputs)
     // Multiple Get Input routines in this module or these would be in individual routines.
-    constexpr int CMO_OASystem(1);
-    constexpr int CMO_AirLoopEqList(2);
-    constexpr int CMO_ControllerList(3);
-    constexpr int CMO_SysAvailMgrList(4);
-    constexpr int CMO_OAController(5);
-    constexpr int CMO_ERVController(6);
-    constexpr int CMO_MechVentilation(7);
-    constexpr int CMO_OAMixer(8);
+    constexpr int CMO_OASystem(0);
+    constexpr int CMO_AirLoopEqList(1);
+    constexpr int CMO_ControllerList(2);
+    constexpr int CMO_SysAvailMgrList(3);
+    constexpr int CMO_OAController(4);
+    constexpr int CMO_ERVController(5);
+    constexpr int CMO_MechVentilation(6);
+    constexpr int CMO_OAMixer(7);
 
     // OA Controller Limiting Factor (used for integer output variable values for OAControllerProps::OALimitingFactor
     constexpr int limitFactorNone = 0;        // No limit other than fixed OA amount
@@ -155,9 +155,17 @@ namespace MixedAir {
     constexpr int limitFactorDemandLimit = 8; // Demand-limiting
     constexpr int limitFactorEMS = 9;         // EMS override
 
-    extern Array1D_string const CurrentModuleObjects;
+static constexpr std::array<std::string_view, 8> CurrentModuleObjects{
+    "AirLoopHVAC:OutdoorAirSystem",
+    "AirLoopHVAC:OutdoorAirSystem:EquipmentList",
+    "AirLoopHVAC:ControllerList",
+    "AvailabilityManagerAssignmentList",
+    "Controller:OutdoorAir",
+    "ZoneHVAC:EnergyRecoveryVentilator:Controller",
+    "Controller:MechanicalVentilation",
+    "OutdoorAir:Mixer"};
 
-    struct ControllerListProps
+struct ControllerListProps
     {
         // Members
         std::string Name;
@@ -416,7 +424,7 @@ namespace MixedAir {
     int GetOAController(EnergyPlusData &state, std::string const &OAName);
 
     void
-    ManageOutsideAirSystem(EnergyPlusData &state, std::string const &OASysName, bool const FirstHVACIteration, int const AirLoopNum, int &OASysNum);
+    ManageOutsideAirSystem(EnergyPlusData &state, std::string_view OASysName, bool const FirstHVACIteration, int const AirLoopNum, int &OASysNum);
 
     void SimOutsideAirSys(EnergyPlusData &state, int const OASysNum, bool const FirstHVACIteration, int const AirLoopNum);
 
@@ -424,7 +432,7 @@ namespace MixedAir {
 
     void SimOAComponent(EnergyPlusData &state,
                         std::string const &CompType, // the component type
-                        std::string const &CompName, // the component Name
+                        std::string_view CompName, // the component Name
                         int const CompTypeNum,       // Component Type -- Integerized for this module
                         bool const FirstHVACIteration,
                         int &CompIndex,
@@ -436,7 +444,7 @@ namespace MixedAir {
                         bool &OAHX            // TRUE indicates a heat exchanger has been found
     );
 
-    void SimOAMixer(EnergyPlusData &state, std::string const &CompName, bool const FirstHVACIteration, int &CompIndex);
+    void SimOAMixer(EnergyPlusData &state, std::string_view CompName, bool const FirstHVACIteration, int &CompIndex);
 
     void SimOAController(EnergyPlusData &state, std::string const &CtrlName, int &CtrlIndex, bool const FirstHVACIteration, int const AirLoopNum);
 
@@ -452,7 +460,7 @@ namespace MixedAir {
     void GetOAMixerInputs(EnergyPlusData &state);
 
     void ProcessOAControllerInputs(EnergyPlusData &state,
-                                   std::string const &CurrentModuleObject,
+                                   std::string_view CurrentModuleObject,
                                    int const OutAirNum,
                                    Array1D_string const &AlphArray,
                                    int &NumAlphas,
@@ -558,7 +566,7 @@ namespace MixedAir {
     void CheckControllerLists(EnergyPlusData &state, bool &ErrFound);
 
     void CheckOAControllerName(
-        EnergyPlusData &state, std::string &OAControllerName, std::string const &ObjectType, std::string const &FieldName, bool &ErrorsFound);
+        EnergyPlusData &state, std::string &OAControllerName, std::string const &ObjectType, std::string_view FieldName, bool &ErrorsFound);
 
     int GetNumOASystems(EnergyPlusData &state);
 

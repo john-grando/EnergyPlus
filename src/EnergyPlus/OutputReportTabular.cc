@@ -278,7 +278,7 @@ void GetInputTabularMonthly(EnergyPlusData &state)
     // na
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const CurrentModuleObject("Output:Table:Monthly");
+    static constexpr std::string_view CurrentModuleObject("Output:Table:Monthly");
 
     // INTERFACE BLOCK SPECIFICATIONS:
     // na
@@ -311,8 +311,8 @@ void GetInputTabularMonthly(EnergyPlusData &state)
         // if not a run period using weather do not create reports
         if (!state.dataGlobal->DoWeathSim) {
             ShowWarningError(state,
-                             CurrentModuleObject + " requested with SimulationControl Run Simulation for Weather File Run Periods set to No so " +
-                                 CurrentModuleObject + " will not be generated");
+                             std::string{CurrentModuleObject} + " requested with SimulationControl Run Simulation for Weather File Run Periods set to No so " +
+                                 std::string{CurrentModuleObject} + " will not be generated");
             return;
         }
     }
@@ -326,7 +326,7 @@ void GetInputTabularMonthly(EnergyPlusData &state)
             UtilityRoutines::IsNameEmpty(state, AlphArray(1), CurrentModuleObject, ErrorsFound);
         }
         if (NumAlphas < 2) {
-            ShowSevereError(state, CurrentModuleObject + ": No fields specified.");
+            ShowSevereError(state, std::string{CurrentModuleObject} + ": No fields specified.");
         }
         // add to the data structure
         curTable = AddMonthlyReport(state, AlphArray(1), int(NumArray(1)));
@@ -364,7 +364,7 @@ void GetInputTabularMonthly(EnergyPlusData &state)
                 curAggType = iAggType::MinimumDuringHoursShown;
             } else {
                 curAggType = iAggType::SumOrAvg;
-                ShowWarningError(state, CurrentModuleObject + '=' + ort->MonthlyInput(TabNum).name + ", Variable name=" + AlphArray(jField));
+                ShowWarningError(state, std::string{CurrentModuleObject} + '=' + ort->MonthlyInput(TabNum).name + ", Variable name=" + AlphArray(jField));
                 ShowContinueError(state, "Invalid aggregation type=\"" + curAggString + "\"  Defaulting to SumOrAverage.");
             }
             AddMonthlyFieldSetInput(state, curTable, AlphArray(jField), "", curAggType);
@@ -1007,7 +1007,7 @@ void GetInputTabularTimeBins(EnergyPlusData &state)
     // na
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const CurrentModuleObject("Output:Table:TimeBins");
+    static constexpr std::string_view CurrentModuleObject("Output:Table:TimeBins");
 
     // INTERFACE BLOCK SPECIFICATIONS:
     // na
@@ -1051,8 +1051,8 @@ void GetInputTabularTimeBins(EnergyPlusData &state)
         // if not a run period using weather do not create reports
         if (!state.dataGlobal->DoWeathSim) {
             ShowWarningError(state,
-                             CurrentModuleObject + " requested with SimulationControl Run Simulation for Weather File Run Periods set to No so " +
-                                 CurrentModuleObject + " will not be generated");
+                             std::string{CurrentModuleObject} + " requested with SimulationControl Run Simulation for Weather File Run Periods set to No so " +
+                                 std::string{CurrentModuleObject} + " will not be generated");
             return;
         }
     }
@@ -1080,7 +1080,7 @@ void GetInputTabularTimeBins(EnergyPlusData &state)
             ort->OutputTableBinned(iInObj).scheduleIndex = GetScheduleIndex(state, AlphArray(3));
             if (ort->OutputTableBinned(iInObj).scheduleIndex == 0) {
                 ShowWarningError(
-                    state, CurrentModuleObject + ": invalid " + state.dataIPShortCut->cAlphaFieldNames(3) + "=\"" + AlphArray(3) + "\" - not found.");
+                    state, std::string{CurrentModuleObject} + ": invalid " + state.dataIPShortCut->cAlphaFieldNames(3) + "=\"" + AlphArray(3) + "\" - not found.");
             }
         } else {
             ort->OutputTableBinned(iInObj).scheduleIndex = 0; // flag value for no schedule used
@@ -1090,7 +1090,7 @@ void GetInputTabularTimeBins(EnergyPlusData &state)
             if (!(UtilityRoutines::SameString(AlphArray(4), "ENERGY") || UtilityRoutines::SameString(AlphArray(4), "DEMAND") ||
                   UtilityRoutines::SameString(AlphArray(4), "TEMPERATURE") || UtilityRoutines::SameString(AlphArray(4), "FLOWRATE"))) {
                 ShowWarningError(state,
-                                 "In " + CurrentModuleObject + " named " + AlphArray(1) +
+                                 "In " + std::string{CurrentModuleObject} + " named " + AlphArray(1) +
                                      " the Variable Type was not energy, demand, temperature, or flowrate.");
             }
         }
@@ -1121,7 +1121,7 @@ void GetInputTabularTimeBins(EnergyPlusData &state)
                                    ort->OutputTableBinned(iInObj).units);
         if (ort->OutputTableBinned(iInObj).typeOfVar == 0) {
             ShowWarningError(state,
-                             CurrentModuleObject + ": User specified meter or variable not found: " + ort->OutputTableBinned(iInObj).varOrMeter);
+                             std::string{CurrentModuleObject} + ": User specified meter or variable not found: " + ort->OutputTableBinned(iInObj).varOrMeter);
         }
         // If only a single table key is requested than only one should be counted
         // later will reset the numTables array pointer but for now use it to know
@@ -1153,7 +1153,7 @@ void GetInputTabularTimeBins(EnergyPlusData &state)
                 ort->BinObjVarID(repIndex).varMeterNum = objVarIDs(iTable);
                 // check if valid meter or number
                 if (objVarIDs(iTable) == 0) {
-                    ShowWarningError(state, CurrentModuleObject + ": Specified variable or meter not found: " + objNames(iTable));
+                    ShowWarningError(state, std::string{CurrentModuleObject} + ": Specified variable or meter not found: " + objNames(iTable));
                 }
             }
         } else {
@@ -1198,11 +1198,11 @@ void GetInputTabularTimeBins(EnergyPlusData &state)
     }
 }
 
-bool warningAboutKeyNotFound(EnergyPlusData &state, int foundIndex, int inObjIndex, std::string const &moduleName)
+bool warningAboutKeyNotFound(EnergyPlusData &state, int foundIndex, int inObjIndex, std::string_view const moduleName)
 {
     if (foundIndex == 0) {
         ShowWarningError(state,
-                         moduleName + ": Specified key not found: " + state.dataOutRptTab->OutputTableBinned(inObjIndex).keyValue +
+                         std::string{moduleName} + ": Specified key not found: " + state.dataOutRptTab->OutputTableBinned(inObjIndex).keyValue +
                              " for variable: " + state.dataOutRptTab->OutputTableBinned(inObjIndex).varOrMeter);
         return true;
     } else {
@@ -1238,7 +1238,7 @@ void GetInputTabularStyle(EnergyPlusData &state)
     // na
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const CurrentModuleObject("OutputControl:Table:Style");
+    static constexpr std::string_view CurrentModuleObject("OutputControl:Table:Style");
 
     // INTERFACE BLOCK SPECIFICATIONS:
     // na
@@ -1340,7 +1340,7 @@ void GetInputTabularStyle(EnergyPlusData &state)
             ort->del(5) = CharSpace; // space - this is not used much for XML output
         } else {
             ShowWarningError(state,
-                             CurrentModuleObject + ": Invalid " + state.dataIPShortCut->cAlphaFieldNames(1) + "=\"" + AlphArray(1) +
+                             std::string{CurrentModuleObject} + ": Invalid " + state.dataIPShortCut->cAlphaFieldNames(1) + "=\"" + AlphArray(1) +
                                  "\". Commas will be used.");
             ort->numStyles = 1;
             ort->TableStyle(1) = iTableStyle::Comma;
@@ -1352,7 +1352,7 @@ void GetInputTabularStyle(EnergyPlusData &state)
             ort->unitsStyle = SetUnitsStyleFromString(AlphArray(2));
             if (ort->unitsStyle == iUnitsStyle::NotFound) {
                 ShowWarningError(state,
-                                 CurrentModuleObject + ": Invalid " + state.dataIPShortCut->cAlphaFieldNames(2) + "=\"" + AlphArray(2) +
+                                 std::string{CurrentModuleObject} + ": Invalid " + state.dataIPShortCut->cAlphaFieldNames(2) + "=\"" + AlphArray(2) +
                                      "\". No unit conversion will be performed. Normal SI units will be shown.");
             }
         } else {
@@ -1360,7 +1360,7 @@ void GetInputTabularStyle(EnergyPlusData &state)
             AlphArray(2) = "None";
         }
     } else if (NumTabularStyle > 1) {
-        ShowWarningError(state, CurrentModuleObject + ": Only one instance of this object is allowed. Commas will be used.");
+        ShowWarningError(state, std::string{CurrentModuleObject} + ": Only one instance of this object is allowed. Commas will be used.");
         ort->TableStyle = iTableStyle::Comma;
         ort->del = std::string(1, CharComma); // comma
         AlphArray(1) = "COMMA";
@@ -1422,7 +1422,7 @@ void GetInputOutputTableSummaryReports(EnergyPlusData &state)
     using DataStringGlobals::CharTab;
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const CurrentModuleObject("Output:Table:SummaryReports");
+    static constexpr std::string_view CurrentModuleObject("Output:Table:SummaryReports");
 
     // INTERFACE BLOCK SPECIFICATIONS:
     // na
@@ -1702,11 +1702,11 @@ void GetInputOutputTableSummaryReports(EnergyPlusData &state)
         }
         CreatePredefinedMonthlyReports(state);
     } else if (NumTabularPredefined > 1) {
-        ShowSevereError(state, CurrentModuleObject + ": Only one instance of this object is allowed.");
+        ShowSevereError(state, std::string{CurrentModuleObject} + ": Only one instance of this object is allowed.");
         ErrorsFound = true;
     }
     if (ErrorsFound) {
-        ShowFatalError(state, CurrentModuleObject + ": Preceding errors cause termination.");
+        ShowFatalError(state, std::string{CurrentModuleObject} + ": Preceding errors cause termination.");
     }
     // if the BEPS report has been called for than initialize its arrays
     if (ort->displayTabularBEPS || ort->displayDemandEndUse || ort->displaySourceEnergyEndUseSummary || ort->displayLEEDSummary) {
@@ -1888,7 +1888,7 @@ bool isCompLoadRepReq(EnergyPlusData &state)
     // na
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const CurrentModuleObject("Output:Table:SummaryReports");
+    static constexpr std::string_view CurrentModuleObject("Output:Table:SummaryReports");
 
     // INTERFACE BLOCK SPECIFICATIONS:
     // na
@@ -3193,20 +3193,20 @@ void WriteTableOfContents(EnergyPlusData &state)
     //   Go through the reports and create links
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const Entire_Facility("Entire Facility");
-    static std::string const Annual_Building_Utility_Performance_Summary("Annual Building Utility Performance Summary");
-    static std::string const Input_Verification_and_Results_Summary("Input Verification and Results Summary");
-    static std::string const Demand_End_Use_Components_Summary("Demand End Use Components Summary");
-    static std::string const Source_Energy_End_Use_Components_Summary("Source Energy End Use Components Summary");
-    static std::string const Component_Cost_Economics_Summary("Component Cost Economics Summary");
-    static std::string const Component_Sizing_Summary("Component Sizing Summary");
-    static std::string const Surface_Shadowing_Summary("Surface Shadowing Summary");
-    static std::string const Adaptive_Comfort_Summary("Adaptive Comfort Summary");
-    static std::string const Initialization_Summary("Initialization Summary");
-    static std::string const Annual_Heat_Emissions_Summary("Annual Heat Emissions Summary");
-    static std::string const Annual_Thermal_Resilience_Summary("Annual Thermal Resilience Summary");
-    static std::string const Annual_CO2_Resilience_Summary("Annual CO2 Resilience Summary");
-    static std::string const Annual_Visual_Resilience_Summary("Annual Visual Resilience Summary");
+    static constexpr std::string_view Entire_Facility("Entire Facility");
+    static constexpr std::string_view Annual_Building_Utility_Performance_Summary("Annual Building Utility Performance Summary");
+    static constexpr std::string_view Input_Verification_and_Results_Summary("Input Verification and Results Summary");
+    static constexpr std::string_view Demand_End_Use_Components_Summary("Demand End Use Components Summary");
+    static constexpr std::string_view Source_Energy_End_Use_Components_Summary("Source Energy End Use Components Summary");
+    static constexpr std::string_view Component_Cost_Economics_Summary("Component Cost Economics Summary");
+    static constexpr std::string_view Component_Sizing_Summary("Component Sizing Summary");
+    static constexpr std::string_view Surface_Shadowing_Summary("Surface Shadowing Summary");
+    static constexpr std::string_view Adaptive_Comfort_Summary("Adaptive Comfort Summary");
+    static constexpr std::string_view Initialization_Summary("Initialization Summary");
+    static constexpr std::string_view Annual_Heat_Emissions_Summary("Annual Heat Emissions Summary");
+    static constexpr std::string_view Annual_Thermal_Resilience_Summary("Annual Thermal Resilience Summary");
+    static constexpr std::string_view Annual_CO2_Resilience_Summary("Annual CO2 Resilience Summary");
+    static constexpr std::string_view Annual_Visual_Resilience_Summary("Annual Visual Resilience Summary");
 
     // INTERFACE BLOCK SPECIFICATIONS:
     // na
@@ -5405,7 +5405,7 @@ void FillWeatherPredefinedEntries(EnergyPlusData &state)
     using namespace OutputReportPredefined;
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const degChar("°");
+    static const std::string degChar("°");
 
     auto &ort(state.dataOutRptTab);
 
@@ -15519,7 +15519,7 @@ void WriteTable(EnergyPlusData &state,
     // SUBROUTINE ARGUMENT DEFINITIONS:
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const blank;
+    static constexpr std::string_view blank;
 
     // INTERFACE BLOCK SPECIFICATIONS:
     // na
@@ -15597,7 +15597,7 @@ void WriteTable(EnergyPlusData &state,
     bodyEsc.allocate(colsBody, rowsBody);
     // create new array to hold multiple line column lables
     colLabelMulti.allocate(colsColumnLabels, 50);
-    colLabelMulti = blank; // set array to blank
+    colLabelMulti = std::string{}; // set array to blank
     numColLabelRows = 0;   // default value
     maxNumColLabelRows = 0;
 
@@ -15883,7 +15883,7 @@ void WriteTable(EnergyPlusData &state,
     }
 }
 
-std::string MakeAnchorName(std::string const &reportString, std::string const &objectString)
+std::string MakeAnchorName(std::string_view const reportString, std::string_view const objectString)
 {
     // SUBROUTINE INFORMATION:
     //       AUTHOR         Jason Glazer

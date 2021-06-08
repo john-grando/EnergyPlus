@@ -726,7 +726,7 @@ A driver for this module with external connection. It contains following common 
 
 
     void SimAirLoopHVACDOAS
-			(std::string const &CompName,   // Name of the unitary engine driven heat pump system
+			(std::string_view CompName,   // Name of the unitary engine driven heat pump system
                        bool const FirstHVACIteration, // TRUE if 1st HVAC simulation of system time step
                        int &CompIndex                 // Index to AirLoopHAVCDOAS
     )

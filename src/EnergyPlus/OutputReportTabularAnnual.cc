@@ -86,7 +86,7 @@ void GetInputTabularAnnual(EnergyPlusData &state)
     // is used for both user defined monthly reports and
     // predefined monthly reports.
 
-    static std::string const currentModuleObject("Output:Table:Annual");
+    static constexpr std::string_view currentModuleObject("Output:Table:Annual");
 
     int jAlpha;
     int numParams;            // Number of elements combined
@@ -110,8 +110,8 @@ void GetInputTabularAnnual(EnergyPlusData &state)
         // if not a run period using weather do not create reports
         if (!state.dataGlobal->DoWeathSim) {
             ShowWarningError(state,
-                             currentModuleObject + " requested with SimulationControl Run Simulation for Weather File Run Periods set to No so " +
-                                 currentModuleObject + " will not be generated");
+                             std::string{currentModuleObject} + " requested with SimulationControl Run Simulation for Weather File Run Periods set to No so " +
+                                 std::string{currentModuleObject} + " will not be generated");
             return;
         }
     }
@@ -144,7 +144,7 @@ void GetInputTabularAnnual(EnergyPlusData &state)
             }
             annualTables.back().setupGathering(state);
         } else {
-            ShowSevereError(state, currentModuleObject + ": Must enter at least the first six fields.");
+            ShowSevereError(state, std::string{currentModuleObject} + ": Must enter at least the first six fields.");
         }
     }
 }

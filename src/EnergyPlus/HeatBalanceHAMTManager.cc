@@ -156,13 +156,13 @@ namespace HeatBalanceHAMTManager {
         // gets input for the HAMT model
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        static std::string const cHAMTObject1("MaterialProperty:HeatAndMoistureTransfer:Settings");
-        static std::string const cHAMTObject2("MaterialProperty:HeatAndMoistureTransfer:SorptionIsotherm");
-        static std::string const cHAMTObject3("MaterialProperty:HeatAndMoistureTransfer:Suction");
-        static std::string const cHAMTObject4("MaterialProperty:HeatAndMoistureTransfer:Redistribution");
-        static std::string const cHAMTObject5("MaterialProperty:HeatAndMoistureTransfer:Diffusion");
-        static std::string const cHAMTObject6("MaterialProperty:HeatAndMoistureTransfer:ThermalConductivity");
-        static std::string const cHAMTObject7("SurfaceProperties:VaporCoefficients");
+        static constexpr std::string_view cHAMTObject1("MaterialProperty:HeatAndMoistureTransfer:Settings");
+        static constexpr std::string_view cHAMTObject2("MaterialProperty:HeatAndMoistureTransfer:SorptionIsotherm");
+        static constexpr std::string_view cHAMTObject3("MaterialProperty:HeatAndMoistureTransfer:Suction");
+        static constexpr std::string_view cHAMTObject4("MaterialProperty:HeatAndMoistureTransfer:Redistribution");
+        static constexpr std::string_view cHAMTObject5("MaterialProperty:HeatAndMoistureTransfer:Diffusion");
+        static constexpr std::string_view cHAMTObject6("MaterialProperty:HeatAndMoistureTransfer:ThermalConductivity");
+        static constexpr std::string_view cHAMTObject7("SurfaceProperties:VaporCoefficients");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
 
@@ -287,14 +287,14 @@ namespace HeatBalanceHAMTManager {
             matid = UtilityRoutines::FindItemInList(AlphaArray(1), state.dataMaterial->Material);
 
             if (matid == 0) {
-                ShowSevereError(state, cHAMTObject1 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
+                ShowSevereError(state, std::string{cHAMTObject1} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
                 ShowContinueError(state, "The basic material must be defined in addition to specifying HeatAndMoistureTransfer properties.");
                 ErrorsFound = true;
                 continue;
             }
             if (state.dataMaterial->Material(matid).ROnly) {
                 ShowWarningError(state,
-                                 cHAMTObject1 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
+                                 std::string{cHAMTObject1} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
                 continue;
             }
 
@@ -321,14 +321,14 @@ namespace HeatBalanceHAMTManager {
             matid = UtilityRoutines::FindItemInList(AlphaArray(1), state.dataMaterial->Material);
 
             if (matid == 0) {
-                ShowSevereError(state, cHAMTObject2 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
+                ShowSevereError(state, std::string{cHAMTObject2} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
                 ShowContinueError(state, "The basic material must be defined in addition to specifying HeatAndMoistureTransfer properties.");
                 ErrorsFound = true;
                 continue;
             }
             if (state.dataMaterial->Material(matid).ROnly) {
                 ShowWarningError(state,
-                                 cHAMTObject2 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
+                                 std::string{cHAMTObject2} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
                 continue;
             }
 
@@ -388,7 +388,7 @@ namespace HeatBalanceHAMTManager {
                     if (avflag) break;
                 }
                 if (isoerrrise) {
-                    ShowWarningError(state, cHAMTObject2 + " data not rising - Check material " + state.dataMaterial->Material(matid).Name);
+                    ShowWarningError(state, std::string{cHAMTObject2} + " data not rising - Check material " + state.dataMaterial->Material(matid).Name);
                     ShowContinueError(state, "Isotherm data has been fixed, and the simulation continues.");
                 }
             }
@@ -413,14 +413,14 @@ namespace HeatBalanceHAMTManager {
             matid = UtilityRoutines::FindItemInList(AlphaArray(1), state.dataMaterial->Material);
 
             if (matid == 0) {
-                ShowSevereError(state, cHAMTObject3 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
+                ShowSevereError(state, std::string{cHAMTObject3} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
                 ShowContinueError(state, "The basic material must be defined in addition to specifying HeatAndMoistureTransfer properties.");
                 ErrorsFound = true;
                 continue;
             }
             if (state.dataMaterial->Material(matid).ROnly) {
                 ShowWarningError(state,
-                                 cHAMTObject3 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
+                                 std::string{cHAMTObject3} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
                 continue;
             }
 
@@ -459,14 +459,14 @@ namespace HeatBalanceHAMTManager {
 
             matid = UtilityRoutines::FindItemInList(AlphaArray(1), state.dataMaterial->Material);
             if (matid == 0) {
-                ShowSevereError(state, cHAMTObject4 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
+                ShowSevereError(state, std::string{cHAMTObject4} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
                 ShowContinueError(state, "The basic material must be defined in addition to specifying HeatAndMoistureTransfer properties.");
                 ErrorsFound = true;
                 continue;
             }
             if (state.dataMaterial->Material(matid).ROnly) {
                 ShowWarningError(state,
-                                 cHAMTObject4 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
+                                 std::string{cHAMTObject4} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
                 continue;
             }
             Numid = 1;
@@ -504,14 +504,14 @@ namespace HeatBalanceHAMTManager {
 
             matid = UtilityRoutines::FindItemInList(AlphaArray(1), state.dataMaterial->Material);
             if (matid == 0) {
-                ShowSevereError(state, cHAMTObject5 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
+                ShowSevereError(state, std::string{cHAMTObject5} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
                 ShowContinueError(state, "The basic material must be defined in addition to specifying HeatAndMoistureTransfer properties.");
                 ErrorsFound = true;
                 continue;
             }
             if (state.dataMaterial->Material(matid).ROnly) {
                 ShowWarningError(state,
-                                 cHAMTObject5 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
+                                 std::string{cHAMTObject5} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
                 continue;
             }
 
@@ -552,14 +552,14 @@ namespace HeatBalanceHAMTManager {
 
             matid = UtilityRoutines::FindItemInList(AlphaArray(1), state.dataMaterial->Material);
             if (matid == 0) {
-                ShowSevereError(state, cHAMTObject6 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
+                ShowSevereError(state, std::string{cHAMTObject6} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
                 ShowContinueError(state, "The basic material must be defined in addition to specifying HeatAndMoistureTransfer properties.");
                 ErrorsFound = true;
                 continue;
             }
             if (state.dataMaterial->Material(matid).ROnly) {
                 ShowWarningError(state,
-                                 cHAMTObject6 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
+                                 std::string{cHAMTObject6} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is defined as an R-only value material.");
                 continue;
             }
             Numid = 1;
@@ -599,7 +599,7 @@ namespace HeatBalanceHAMTManager {
 
             vtcsid = UtilityRoutines::FindItemInList(AlphaArray(1), state.dataSurface->Surface);
             if (vtcsid == 0) {
-                ShowSevereError(state, cHAMTObject7 + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
+                ShowSevereError(state, std::string{cHAMTObject7} + ' ' + cAlphaFieldNames(1) + "=\"" + AlphaArray(1) + "\" is invalid (undefined).");
                 ShowContinueError(state, "The basic material must be defined in addition to specifying HeatAndMoistureTransfer properties.");
                 ErrorsFound = true;
                 continue;
@@ -1071,8 +1071,8 @@ namespace HeatBalanceHAMTManager {
         // SUBROUTINE ARGUMENT DEFINITIONS:
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        static std::string const HAMTExt("HAMT-Ext");
-        static std::string const HAMTInt("HAMT-Int");
+        static constexpr std::string_view HAMTExt("HAMT-Ext");
+        static constexpr std::string_view HAMTInt("HAMT-Int");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         Real64 TempSurfInP;

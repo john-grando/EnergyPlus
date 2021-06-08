@@ -113,7 +113,7 @@ enum GeneralRoutinesEquipNums
 };
 
 void ControlCompOutput(EnergyPlusData &state,
-                       std::string const &CompName,           // the component Name
+                       std::string_view CompName,           // the component Name
                        std::string const &CompType,           // Type of component
                        int &CompNum,                          // Index of component in component array
                        bool const FirstHVACIteration,         // flag for 1st HVAV iteration in the time step
@@ -238,7 +238,7 @@ void ControlCompOutput(EnergyPlusData &state,
             state.dataLoopNodes->Node(ActuatedNode).MassFlowRateMinAvail = MinFlow;
             // Check to make sure that the Minimum Flow rate is less than the max.
             if (MinFlow > MaxFlow) {
-                ShowSevereError(state, "ControlCompOutput:" + CompType + ':' + CompName + ", Min Control Flow is > Max Control Flow");
+                ShowSevereError(state, "ControlCompOutput:" + CompType + ':' + std::string{CompName} + ", Min Control Flow is > Max Control Flow");
                 ShowContinueError(
                     state, format("Acuated Node={} MinFlow=[{:.3T}], Max Flow={:.3T}", state.dataLoopNodes->NodeID(ActuatedNode), MinFlow, MaxFlow));
                 ShowContinueErrorTimeStamp(state, "");
@@ -565,7 +565,7 @@ void ControlCompOutput(EnergyPlusData &state,
         ++Iter;
         if ((Iter > MaxIter) && (!state.dataGlobal->WarmupFlag)) {
             // if ( CompErrIndex == 0 ) {
-            ShowWarningMessage(state, "ControlCompOutput: Maximum iterations exceeded for " + CompType + " = " + CompName);
+            ShowWarningMessage(state, "ControlCompOutput: Maximum iterations exceeded for " + CompType + " = " + std::string{CompName});
             ShowContinueError(state, format("... Load met       = {:.5T} W.", LoadMet));
             ShowContinueError(state, format("... Load requested = {:.5T} W.", QZnReq));
             ShowContinueError(state, format("... Error          = {:.8T} %.", std::abs((LoadMet - QZnReq) * 100.0 / Denom)));
@@ -574,7 +574,7 @@ void ControlCompOutput(EnergyPlusData &state,
             ShowContinueError(state, format("... Actuated Node Mass Flow Rate ={:.9R} kg/s", state.dataLoopNodes->Node(ActuatedNode).MassFlowRate));
             ShowContinueErrorTimeStamp(state, "");
             ShowRecurringWarningErrorAtEnd(state,
-                                           "ControlCompOutput: Maximum iterations error for " + CompType + " = " + CompName,
+                                           "ControlCompOutput: Maximum iterations error for " + CompType + " = " + std::string{CompName},
                                            CompErrIndex,
                                            std::abs((LoadMet - QZnReq) * 100.0 / Denom),
                                            std::abs((LoadMet - QZnReq) * 100.0 / Denom),
@@ -583,7 +583,7 @@ void ControlCompOutput(EnergyPlusData &state,
                                            "%");
             //}
             ShowRecurringWarningErrorAtEnd(state,
-                                           "ControlCompOutput: Maximum iterations error for " + CompType + " = " + CompName,
+                                           "ControlCompOutput: Maximum iterations error for " + CompType + " = " + std::string{CompName},
                                            CompErrIndex,
                                            std::abs((LoadMet - QZnReq) * 100.0 / Denom),
                                            std::abs((LoadMet - QZnReq) * 100.0 / Denom),
@@ -637,8 +637,8 @@ bool BBConvergeCheck(int const SimCompNum, Real64 const MaxFlow, Real64 const Mi
 }
 
 void CheckSysSizing(EnergyPlusData &state,
-                    std::string const &CompType, // Component Type (e.g. Chiller:Electric)
-                    std::string const &CompName  // Component Name (e.g. Big Chiller)
+                    std::string_view CompType, // Component Type (e.g. Chiller:Electric)
+                    std::string_view CompName  // Component Name (e.g. Big Chiller)
 )
 {
 
@@ -656,7 +656,7 @@ void CheckSysSizing(EnergyPlusData &state,
     // Checks SysSizingRunDone flag. If false throws a fatal error.
 
     if (!state.dataSize->SysSizingRunDone) {
-        ShowSevereError(state, "For autosizing of " + CompType + ' ' + CompName + ", a system sizing run must be done.");
+        ShowSevereError(state, "For autosizing of " + std::string{CompType} + ' ' + std::string{CompName} + ", a system sizing run must be done.");
         if (state.dataSize->NumSysSizInput == 0) {
             ShowContinueError(state, "No \"Sizing:System\" objects were entered.");
         }
@@ -691,8 +691,8 @@ void CheckThisAirSystemForSizing(EnergyPlusData &state, int const AirLoopNum, bo
 }
 
 void CheckZoneSizing(EnergyPlusData &state,
-                     std::string const &CompType, // Component Type (e.g. Chiller:Electric)
-                     std::string const &CompName  // Component Name (e.g. Big Chiller)
+                     std::string_view CompType, // Component Type (e.g. Chiller:Electric)
+                     std::string_view CompName  // Component Name (e.g. Big Chiller)
 )
 {
 
@@ -710,7 +710,7 @@ void CheckZoneSizing(EnergyPlusData &state,
     // Checks ZoneSizingRunDone flag. If false throws a fatal error.
 
     if (!state.dataSize->ZoneSizingRunDone) {
-        ShowSevereError(state, "For autosizing of " + CompType + ' ' + CompName + ", a zone sizing run must be done.");
+        ShowSevereError(state, "For autosizing of " + std::string{CompType} + ' ' + std::string{CompName} + ", a zone sizing run must be done.");
         if (state.dataSize->NumZoneSizingInput == 0) {
             ShowContinueError(state, "No \"Sizing:Zone\" objects were entered.");
         }
@@ -751,10 +751,10 @@ void CheckThisZoneForSizing(EnergyPlusData &state,
 }
 
 void ValidateComponent(EnergyPlusData &state,
-                       std::string const &CompType,  // Component Type (e.g. Chiller:Electric)
-                       std::string const &CompName,  // Component Name (e.g. Big Chiller)
+                       std::string_view CompType,  // Component Type (e.g. Chiller:Electric)
+                       std::string_view CompName,  // Component Name (e.g. Big Chiller)
                        bool &IsNotOK,                // .TRUE. if this component pair is invalid
-                       std::string const &CallString // Context of this pair -- for error message
+                       std::string_view CallString // Context of this pair -- for error message
 )
 {
 
@@ -784,22 +784,22 @@ void ValidateComponent(EnergyPlusData &state,
     ItemNum = state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CompType, CompName);
 
     if (ItemNum < 0) {
-        ShowSevereError(state, "During " + CallString + " Input, Invalid Component Type input=" + CompType);
-        ShowContinueError(state, "Component name=" + CompName);
+        ShowSevereError(state, "During " + std::string{CallString} + " Input, Invalid Component Type input=" + std::string{CompType});
+        ShowContinueError(state, "Component name=" + std::string{CompName});
         IsNotOK = true;
     } else if (ItemNum == 0) {
-        ShowSevereError(state, "During " + CallString + " Input, Invalid Component Name input=" + CompName);
-        ShowContinueError(state, "Component type=" + CompType);
+        ShowSevereError(state, "During " + std::string{CallString} + " Input, Invalid Component Name input=" + std::string{CompName});
+        ShowContinueError(state, "Component type=" + std::string{CompType});
         IsNotOK = true;
     }
 }
 
 void ValidateComponent(EnergyPlusData &state,
-                       std::string const &CompType,    // Component Type (e.g. Chiller:Electric)
-                       std::string const &CompValType, // Component "name" field type
-                       std::string const &CompName,    // Component Name (e.g. Big Chiller)
+                       std::string_view CompType,    // Component Type (e.g. Chiller:Electric)
+                       std::string_view CompValType, // Component "name" field type
+                       std::string_view CompName,    // Component Name (e.g. Big Chiller)
                        bool &IsNotOK,                  // .TRUE. if this component pair is invalid
-                       std::string const &CallString   // Context of this pair -- for error message
+                       std::string_view CallString   // Context of this pair -- for error message
 )
 {
 
@@ -829,12 +829,12 @@ void ValidateComponent(EnergyPlusData &state,
     ItemNum = state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CompType, CompValType, CompName);
 
     if (ItemNum < 0) {
-        ShowSevereError(state, "During " + CallString + " Input, Invalid Component Type input=" + CompType);
-        ShowContinueError(state, "Component name=" + CompName);
+        ShowSevereError(state, "During " + std::string{CallString} + " Input, Invalid Component Type input=" + std::string{CompType});
+        ShowContinueError(state, "Component name=" + std::string{CompName});
         IsNotOK = true;
     } else if (ItemNum == 0) {
-        ShowSevereError(state, "During " + CallString + " Input, Invalid Component Name input=" + CompName);
-        ShowContinueError(state, "Component type=" + CompType);
+        ShowSevereError(state, "During " + std::string{CallString} + " Input, Invalid Component Name input=" + std::string{CompName});
+        ShowContinueError(state, "Component type=" + std::string{CompType});
         IsNotOK = true;
     }
 }

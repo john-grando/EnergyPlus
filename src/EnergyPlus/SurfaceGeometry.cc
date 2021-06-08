@@ -106,7 +106,7 @@ namespace SurfaceGeometry {
     using namespace DataSurfaces;
     using DataWindowEquivalentLayer::CFSMAXNL;
 
-    static std::string const BlankString;
+    static constexpr std::string_view BlankString;
 
     void AllocateSurfaceWindows(EnergyPlusData &state, int NumSurfaces)
     {
@@ -14031,7 +14031,7 @@ namespace SurfaceGeometry {
         // ratio for the entire building based on user input.
         // This routine is called once for each surface by subroutine GetVertices
 
-        static std::string const CurrentModuleObject("GeometryTransform");
+        static constexpr std::string_view CurrentModuleObject("GeometryTransform");
 
         Array1D_string cAlphas(1);
         Array1D<Real64> rNumerics(2);
@@ -14070,13 +14070,13 @@ namespace SurfaceGeometry {
                 transformPlane = cAlphas(1);
                 if (transformPlane != "XY") {
                     ShowWarningError(
-                        state, CurrentModuleObject + ": invalid " + state.dataIPShortCut->cAlphaFieldNames(1) + "=\"" + cAlphas(1) + "...ignored.");
+                        state, std::string{CurrentModuleObject} + ": invalid " + state.dataIPShortCut->cAlphaFieldNames(1) + "=\"" + cAlphas(1) + "...ignored.");
                 }
                 state.dataSurfaceGeometry->firstTime = false;
                 state.dataSurfaceGeometry->noTransform = false;
                 state.dataSurface->AspectTransform = true;
                 if (state.dataSurface->WorldCoordSystem) {
-                    ShowWarningError(state, CurrentModuleObject + ": must use Relative Coordinate System.  Transform request ignored.");
+                    ShowWarningError(state, std::string{CurrentModuleObject} + ": must use Relative Coordinate System.  Transform request ignored.");
                     state.dataSurfaceGeometry->noTransform = true;
                     state.dataSurface->AspectTransform = false;
                 }

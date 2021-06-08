@@ -174,7 +174,7 @@ namespace ZoneAirLoopEquipmentManager {
 
         // SUBROUTINE PARAMETER DEFINITIONS:
         static constexpr std::string_view RoutineName("GetZoneAirLoopEquipment: ");            // include trailing blank space
-        static std::string const CurrentModuleObject("ZoneHVAC:AirDistributionUnit"); // Object type for getting and error messages
+        static constexpr std::string_view CurrentModuleObject("ZoneHVAC:AirDistributionUnit"); // Object type for getting and error messages
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int AirDistUnitNum;
@@ -241,7 +241,7 @@ namespace ZoneAirLoopEquipmentManager {
                 state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipName(AirDistCompUnitNum) = AlphArray(4);
                 ValidateComponent(state, AlphArray(3), AlphArray(4), IsNotOK, CurrentModuleObject);
                 if (IsNotOK) {
-                    ShowContinueError(state, "In " + CurrentModuleObject + " = " + AlphArray(1));
+                    ShowContinueError(state, "In " + std::string{CurrentModuleObject} + " = " + AlphArray(1));
                     ErrorsFound = true;
                 }
                 state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeakFrac = NumArray(1);
@@ -254,7 +254,7 @@ namespace ZoneAirLoopEquipmentManager {
                         1.0 / (1.0 - state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeakFrac);
                 } else {
                     ShowSevereError(state,
-                                    "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                                    "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                     ShowContinueError(state, cNumericFields(2) + " must be less than 1.0");
                     ErrorsFound = true;
                 }
@@ -277,7 +277,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).AirTerminalSizingSpecIndex == 0) {
                         ShowSevereError(state, cAlphaFields(5) + " = " + AlphArray(5) + " not found.");
                         ShowContinueError(state,
-                                          "Occurs in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                                          "Occurs in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ErrorsFound = true;
                     }
                 }
@@ -289,7 +289,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -302,7 +302,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -315,7 +315,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -352,7 +352,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -365,7 +365,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -378,7 +378,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -391,7 +391,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -404,7 +404,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -419,7 +419,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -436,7 +436,7 @@ namespace ZoneAirLoopEquipmentManager {
                     if (state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).UpStreamLeak ||
                         state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).DownStreamLeak) {
                         ShowSevereError(
-                            state, "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                            state, "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                         ShowContinueError(state,
                                           "Simple duct leakage model not available for " + cAlphaFields(3) + " = " +
                                               state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -444,7 +444,7 @@ namespace ZoneAirLoopEquipmentManager {
                     }
                 } else {
                     ShowSevereError(state,
-                                    "Error found in " + CurrentModuleObject + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
+                                    "Error found in " + std::string{CurrentModuleObject} + " = " + state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).Name);
                     ShowContinueError(state,
                                       "Invalid " + cAlphaFields(3) + " = " +
                                           state.dataDefineEquipment->AirDistUnit(AirDistUnitNum).EquipType(AirDistCompUnitNum));
@@ -538,7 +538,7 @@ namespace ZoneAirLoopEquipmentManager {
             }
         }
         if (ErrorsFound) {
-            ShowFatalError(state, std::string{RoutineName} + "Errors found in getting " + CurrentModuleObject + " Input");
+            ShowFatalError(state, std::string{RoutineName} + "Errors found in getting " + std::string{CurrentModuleObject} + " Input");
         }
     }
 

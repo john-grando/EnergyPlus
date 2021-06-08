@@ -128,11 +128,11 @@ namespace VentilatedSlab {
     using namespace Psychrometrics;
     using namespace FluidProperties;
 
-    static std::string const fluidNameSteam("STEAM");
-    static std::string const fluidNameWater("WATER");
+    static constexpr std::string_view fluidNameSteam("STEAM");
+    static constexpr std::string_view fluidNameWater("WATER");
 
     void SimVentilatedSlab(EnergyPlusData &state,
-                           std::string const &CompName,   // name of the fan coil unit
+                           std::string_view CompName,   // name of the fan coil unit
                            int const ZoneNum,             // number of zone being served
                            bool const FirstHVACIteration, // TRUE if 1st HVAC simulation of system timestep
                            Real64 &PowerMet,              // Sensible power supplied (W)
@@ -162,7 +162,7 @@ namespace VentilatedSlab {
         if (CompIndex == 0) {
             Item = UtilityRoutines::FindItemInList(CompName, state.dataVentilatedSlab->VentSlab);
             if (Item == 0) {
-                ShowFatalError(state, "SimVentilatedSlab: system not found=" + CompName);
+                ShowFatalError(state, "SimVentilatedSlab: system not found=" + std::string{CompName});
             }
             CompIndex = Item;
         } else {
@@ -238,14 +238,14 @@ namespace VentilatedSlab {
         using OutAirNodeManager::CheckAndAddAirNodeNumber;
 
         // SUBROUTINE PARAMETER DEFINITIONS:
-        static std::string const MeanAirTemperature("MeanAirTemperature");
-        static std::string const MeanRadiantTemperature("MeanRadiantTemperature");
-        static std::string const OperativeTemperature("OperativeTemperature");
-        static std::string const OutsideAirDryBulbTemperature("OutdoorDryBulbTemperature");
-        static std::string const OutsideAirWetBulbTemperature("OutdoorWetBulbTemperature");
-        static std::string const SlabSurfaceTemperature("SurfaceTemperature");
-        static std::string const SlabSurfaceDewPointTemperature("ZoneAirDewPointTemperature");
-        static std::string const CurrentModuleObject("ZoneHVAC:VentilatedSlab");
+        static constexpr std::string_view MeanAirTemperature("MeanAirTemperature");
+        static constexpr std::string_view MeanRadiantTemperature("MeanRadiantTemperature");
+        static constexpr std::string_view OperativeTemperature("OperativeTemperature");
+        static constexpr std::string_view OutsideAirDryBulbTemperature("OutdoorDryBulbTemperature");
+        static constexpr std::string_view OutsideAirWetBulbTemperature("OutdoorWetBulbTemperature");
+        static constexpr std::string_view SlabSurfaceTemperature("SurfaceTemperature");
+        static constexpr std::string_view SlabSurfaceDewPointTemperature("ZoneAirDewPointTemperature");
+        static constexpr std::string_view CurrentModuleObject("ZoneHVAC:VentilatedSlab");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         bool ErrorsFound(false); // Set to true if errors in input, fatal at end of routine
@@ -319,7 +319,7 @@ namespace VentilatedSlab {
                     GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(2)); // convert schedule name to pointer
                 if (state.dataVentilatedSlab->VentSlab(Item).SchedPtr == 0) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(2) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(2) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(2) + "\" not found.");
                     ErrorsFound = true;
                 }
@@ -331,11 +331,11 @@ namespace VentilatedSlab {
             if (state.dataVentilatedSlab->VentSlab(Item).ZonePtr == 0) {
                 if (lAlphaBlanks(3)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) +
                                         " is required but input is blank.");
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(3) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(3) + "\" not found.");
                 }
                 ErrorsFound = true;
@@ -389,11 +389,11 @@ namespace VentilatedSlab {
                 // Error checking for single surfaces
                 if (state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(1) == 0) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(4) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(4) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(4) + "\" not found.");
                     ErrorsFound = true;
                 } else if (state.dataSurface->SurfIsRadSurfOrVentSlabOrPool(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(1))) {
-                    ShowSevereError(state, CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\", invalid Surface");
+                    ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\", invalid Surface");
                     ShowContinueError(state,
                                       cAlphaFields(4) + "=\"" + state.dataIPShortCut->cAlphaArgs(4) +
                                           "\" has been used in another radiant system or ventilated slab.");
@@ -419,7 +419,7 @@ namespace VentilatedSlab {
                              ->Construct(state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Construction)
                              .SourceSinkPresent) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid surface=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid surface=\"" +
                                             state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Name + "\".");
                         ShowContinueError(
                             state,
@@ -438,14 +438,14 @@ namespace VentilatedSlab {
                     if (state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Zone !=
                         state.dataVentilatedSlab->VentSlab(Item).ZonePtr) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid surface=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid surface=\"" +
                                             state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Name + "\".");
                         ShowContinueError(
                             state,
                             "Surface in Zone=" +
                                 state.dataHeatBal->Zone(state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Zone)
                                     .Name +
-                                ' ' + CurrentModuleObject + " in Zone=" + state.dataIPShortCut->cAlphaArgs(3));
+                                ' ' + std::string{CurrentModuleObject} + " in Zone=" + state.dataIPShortCut->cAlphaArgs(3));
                         ErrorsFound = true;
                     }
                     if (state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Construction == 0)
@@ -454,7 +454,7 @@ namespace VentilatedSlab {
                              ->Construct(state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Construction)
                              .SourceSinkPresent) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid surface=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid surface=\"" +
                                             state.dataSurface->Surface(state.dataVentilatedSlab->VentSlab(Item).SurfacePtr(SurfNum)).Name + "\".");
                         ShowContinueError(
                             state,
@@ -483,12 +483,12 @@ namespace VentilatedSlab {
                         GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(7)); // convert schedule name to pointer
                     if (state.dataVentilatedSlab->VentSlab(Item).MaxOASchedPtr == 0) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
                                             state.dataIPShortCut->cAlphaArgs(7) + "\" not found.");
                         ErrorsFound = true;
                     } else if (!CheckScheduleValueMinMax(state, state.dataVentilatedSlab->VentSlab(Item).MaxOASchedPtr, ">=0", 0.0, "<=", 1.0)) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
                                             state.dataIPShortCut->cAlphaArgs(7) + "\" values out of range [0,1].");
                         ErrorsFound = true;
                     }
@@ -499,12 +499,12 @@ namespace VentilatedSlab {
                         GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(7)); // convert schedule name to pointer
                     if (state.dataVentilatedSlab->VentSlab(Item).MaxOASchedPtr == 0) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
                                             state.dataIPShortCut->cAlphaArgs(7) + "\" not found.");
                         ErrorsFound = true;
                     } else if (!CheckScheduleValueMinMax(state, state.dataVentilatedSlab->VentSlab(Item).MaxOASchedPtr, ">=0", 0.0)) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
                                             state.dataIPShortCut->cAlphaArgs(7) + "\" values out of range (must be >=0).");
                         ErrorsFound = true;
                     }
@@ -515,13 +515,13 @@ namespace VentilatedSlab {
                         GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(7)); // convert schedule name to pointer
                     if (state.dataVentilatedSlab->VentSlab(Item).TempSchedPtr == 0) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(7) + "=\"" +
                                             state.dataIPShortCut->cAlphaArgs(7) + "\" not found.");
                         ErrorsFound = true;
                     }
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(5) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(5) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(5) + "\".");
                 }
             }
@@ -531,7 +531,7 @@ namespace VentilatedSlab {
                 GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(6)); // convert schedule name to pointer
             if (state.dataVentilatedSlab->VentSlab(Item).MinOASchedPtr == 0) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(6) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(6) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(6) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -545,7 +545,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).SysConfg = state.dataVentilatedSlab->SeriesSlabs;
             } else {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(8) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(8) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(8) + "\".");
                 ShowContinueError(state, "Control reset to SLAB ONLY Configuration.");
                 state.dataVentilatedSlab->VentSlab(Item).SysConfg = state.dataVentilatedSlab->SlabOnly;
@@ -559,7 +559,7 @@ namespace VentilatedSlab {
             if (UtilityRoutines::SameString(state.dataIPShortCut->cAlphaArgs(8), "SurfaceListNames")) {
                 if (!lNumericBlanks(4)) {
                     ShowWarningError(state,
-                                     CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
+                                     std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
                                          "\"  Core Diameter is not needed for the series slabs configuration- ignored.");
                     ShowContinueError(state, "...It has been asigned on SlabGroup.");
                 }
@@ -568,7 +568,7 @@ namespace VentilatedSlab {
             if (UtilityRoutines::SameString(state.dataIPShortCut->cAlphaArgs(8), "SurfaceListNames")) {
                 if (!lNumericBlanks(5)) {
                     ShowWarningError(state,
-                                     CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
+                                     std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
                                          "\"  Core Length is not needed for the series slabs configuration- ignored.");
                     ShowContinueError(state, "...It has been asigned on SlabGroup.");
                 }
@@ -577,7 +577,7 @@ namespace VentilatedSlab {
             if (UtilityRoutines::SameString(state.dataIPShortCut->cAlphaArgs(8), "SurfaceListNames")) {
                 if (!lNumericBlanks(6)) {
                     ShowWarningError(state,
-                                     CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
+                                     std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
                                          "\"  Core Numbers is not needed for the series slabs configuration- ignored.");
                     ShowContinueError(state, "...It has been asigned on SlabGroup.");
                 }
@@ -600,7 +600,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).ControlType = state.dataVentilatedSlab->DPTZControl;
             } else {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(9) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(9) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(9) + "\".");
                 ShowContinueError(state, "Control reset to ODB control.");
                 state.dataVentilatedSlab->VentSlab(Item).ControlType = state.dataVentilatedSlab->ODBControl;
@@ -613,7 +613,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).HotAirHiTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(10));
             if ((state.dataVentilatedSlab->VentSlab(Item).HotAirHiTempSchedPtr == 0) && (!lAlphaBlanks(10))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(10) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(10) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(10) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -624,7 +624,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).HotAirLoTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(11));
             if ((state.dataVentilatedSlab->VentSlab(Item).HotAirLoTempSchedPtr == 0) && (!lAlphaBlanks(11))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(11) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(11) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(11) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -633,7 +633,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).HotCtrlHiTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(12));
             if ((state.dataVentilatedSlab->VentSlab(Item).HotCtrlHiTempSchedPtr == 0) && (!lAlphaBlanks(12))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(12) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(12) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(12) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -642,7 +642,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).HotCtrlLoTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(13));
             if ((state.dataVentilatedSlab->VentSlab(Item).HotCtrlLoTempSchedPtr == 0) && (!lAlphaBlanks(13))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(13) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(13) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(13) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -653,7 +653,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).ColdAirHiTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(14));
             if ((state.dataVentilatedSlab->VentSlab(Item).ColdAirHiTempSchedPtr == 0) && (!lAlphaBlanks(14))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(14) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(14) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(14) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -664,7 +664,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).ColdAirLoTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(15));
             if ((state.dataVentilatedSlab->VentSlab(Item).ColdAirLoTempSchedPtr == 0) && (!lAlphaBlanks(15))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(15) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(15) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(15) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -675,7 +675,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).ColdCtrlHiTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(16));
             if ((state.dataVentilatedSlab->VentSlab(Item).ColdCtrlHiTempSchedPtr == 0) && (!lAlphaBlanks(16))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(16) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(16) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(16) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -686,7 +686,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).ColdCtrlLoTempSchedPtr = GetScheduleIndex(state, state.dataIPShortCut->cAlphaArgs(17));
             if ((state.dataVentilatedSlab->VentSlab(Item).ColdCtrlLoTempSchedPtr == 0) && (!lAlphaBlanks(17))) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(17) + "=\"" +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(17) + "=\"" +
                                     state.dataIPShortCut->cAlphaArgs(17) + "\" not found.");
                 ErrorsFound = true;
             }
@@ -729,7 +729,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).ReturnAirNode = GetOnlySingleNode(state,
                                                                                            state.dataIPShortCut->cAlphaArgs(18),
                                                                                            ErrorsFound,
-                                                                                           CurrentModuleObject + "-OA MIXER",
+                                                                                           std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                            state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                            DataLoopNode::NodeFluidType::Air,
                                                                                            DataLoopNode::NodeConnectionType::Internal,
@@ -748,7 +748,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).OAMixerOutNode = GetOnlySingleNode(state,
                                                                                             state.dataIPShortCut->cAlphaArgs(23),
                                                                                             ErrorsFound,
-                                                                                            CurrentModuleObject + "-OA MIXER",
+                                                                                            std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                             state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                             DataLoopNode::NodeFluidType::Air,
                                                                                             DataLoopNode::NodeConnectionType::Outlet,
@@ -769,7 +769,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).ReturnAirNode = GetOnlySingleNode(state,
                                                                                            state.dataIPShortCut->cAlphaArgs(18),
                                                                                            ErrorsFound,
-                                                                                           CurrentModuleObject + "-OA MIXER",
+                                                                                           std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                            state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                            DataLoopNode::NodeFluidType::Air,
                                                                                            DataLoopNode::NodeConnectionType::Internal,
@@ -788,7 +788,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).OAMixerOutNode = GetOnlySingleNode(state,
                                                                                             state.dataIPShortCut->cAlphaArgs(23),
                                                                                             ErrorsFound,
-                                                                                            CurrentModuleObject + "-OA MIXER",
+                                                                                            std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                             state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                             DataLoopNode::NodeFluidType::Air,
                                                                                             DataLoopNode::NodeConnectionType::Outlet,
@@ -809,7 +809,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).ReturnAirNode = GetOnlySingleNode(state,
                                                                                            state.dataIPShortCut->cAlphaArgs(18),
                                                                                            ErrorsFound,
-                                                                                           CurrentModuleObject + "-SYSTEM",
+                                                                                           std::string{CurrentModuleObject} + "-SYSTEM",
                                                                                            state.dataIPShortCut->cAlphaArgs(1) + "-SYSTEM",
                                                                                            DataLoopNode::NodeFluidType::Air,
                                                                                            DataLoopNode::NodeConnectionType::Inlet,
@@ -818,7 +818,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).ReturnAirNode = GetOnlySingleNode(state,
                                                                                            state.dataIPShortCut->cAlphaArgs(18),
                                                                                            ErrorsFound,
-                                                                                           CurrentModuleObject + "-OA MIXER",
+                                                                                           std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                            state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                            DataLoopNode::NodeFluidType::Air,
                                                                                            DataLoopNode::NodeConnectionType::Inlet,
@@ -836,7 +836,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).OAMixerOutNode = GetOnlySingleNode(state,
                                                                                             state.dataIPShortCut->cAlphaArgs(23),
                                                                                             ErrorsFound,
-                                                                                            CurrentModuleObject + "-OA MIXER",
+                                                                                            std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                             state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                             DataLoopNode::NodeFluidType::Air,
                                                                                             DataLoopNode::NodeConnectionType::Outlet,
@@ -856,7 +856,7 @@ namespace VentilatedSlab {
             if (state.dataVentilatedSlab->VentSlab(Item).SysConfg == state.dataVentilatedSlab->SlabOnly) {
                 if (!lAlphaBlanks(20)) {
                     ShowWarningError(state,
-                                     CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" " + cAlphaFields(20) + "=\"" +
+                                     std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" " + cAlphaFields(20) + "=\"" +
                                          state.dataIPShortCut->cAlphaArgs(20) + "\" not needed - ignored.");
                     ShowContinueError(state, "It is used for \"SlabAndZone\" only");
                 }
@@ -864,7 +864,7 @@ namespace VentilatedSlab {
             } else if (state.dataVentilatedSlab->VentSlab(Item).SysConfg == state.dataVentilatedSlab->SlabAndZone) {
                 if (lAlphaBlanks(20)) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(20) +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(20) +
                                         " is blank and must be entered.");
                     ErrorsFound = true;
                 }
@@ -872,7 +872,7 @@ namespace VentilatedSlab {
                 state.dataVentilatedSlab->VentSlab(Item).ZoneAirInNode = GetOnlySingleNode(state,
                                                                                            state.dataIPShortCut->cAlphaArgs(20),
                                                                                            ErrorsFound,
-                                                                                           CurrentModuleObject + "-SYSTEM",
+                                                                                           std::string{CurrentModuleObject} + "-SYSTEM",
                                                                                            state.dataIPShortCut->cAlphaArgs(1) + "-SYSTEM",
                                                                                            DataLoopNode::NodeFluidType::Air,
                                                                                            DataLoopNode::NodeConnectionType::Outlet,
@@ -894,7 +894,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).OutsideAirNode = GetOnlySingleNode(state,
                                                                                         state.dataIPShortCut->cAlphaArgs(21),
                                                                                         ErrorsFound,
-                                                                                        CurrentModuleObject + "-OA MIXER",
+                                                                                        std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                         state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                         DataLoopNode::NodeFluidType::Air,
                                                                                         DataLoopNode::NodeConnectionType::Inlet,
@@ -905,7 +905,7 @@ namespace VentilatedSlab {
                 CheckAndAddAirNodeNumber(state, state.dataVentilatedSlab->VentSlab(Item).OutsideAirNode, IsValid);
                 if (!IsValid) {
                     ShowWarningError(state,
-                                     CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
+                                     std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) +
                                          "\", Adding OutdoorAir:Node=" + state.dataIPShortCut->cAlphaArgs(21));
                 }
             }
@@ -913,7 +913,7 @@ namespace VentilatedSlab {
             state.dataVentilatedSlab->VentSlab(Item).AirReliefNode = GetOnlySingleNode(state,
                                                                                        state.dataIPShortCut->cAlphaArgs(22),
                                                                                        ErrorsFound,
-                                                                                       CurrentModuleObject + "-OA MIXER",
+                                                                                       std::string{CurrentModuleObject} + "-OA MIXER",
                                                                                        state.dataIPShortCut->cAlphaArgs(1) + "-OA MIXER",
                                                                                        DataLoopNode::NodeFluidType::Air,
                                                                                        DataLoopNode::NodeConnectionType::ReliefAir,
@@ -932,7 +932,7 @@ namespace VentilatedSlab {
                 bool isNotOkay(false);
                 ValidateComponent(state, "FAN:CONSTANTVOLUME", state.dataVentilatedSlab->VentSlab(Item).FanName, isNotOkay, "GetPIUs");
                 if (isNotOkay) {
-                    ShowContinueError(state, "In " + CurrentModuleObject + " = " + state.dataVentilatedSlab->VentSlab(Item).Name);
+                    ShowContinueError(state, "In " + std::string{CurrentModuleObject} + " = " + state.dataVentilatedSlab->VentSlab(Item).Name);
                     ErrorsFound = true;
                 }
                 state.dataVentilatedSlab->VentSlab(Item).FanType_Num = DataHVACGlobals::FanType_SimpleConstVolume;
@@ -947,7 +947,7 @@ namespace VentilatedSlab {
 
             // Add fan to component sets array
             SetUpCompSets(state,
-                          CurrentModuleObject + "-SYSTEM",
+                          std::string{CurrentModuleObject} + "-SYSTEM",
                           state.dataVentilatedSlab->VentSlab(Item).Name + "-SYSTEM",
                           "UNDEFINED",
                           state.dataIPShortCut->cAlphaArgs(25),
@@ -968,7 +968,7 @@ namespace VentilatedSlab {
                     state.dataVentilatedSlab->VentSlab(Item).CoilOption = state.dataVentilatedSlab->NoneOption;
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(26) + "=\"" +
+                                    std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(26) + "=\"" +
                                         state.dataIPShortCut->cAlphaArgs(26) + "\".");
                     ErrorsFound = true;
                 }
@@ -1004,7 +1004,7 @@ namespace VentilatedSlab {
                             state.dataVentilatedSlab->VentSlab(Item).HCoil_FluidIndex = FindRefrigerant(state, "Steam");
                             if (state.dataVentilatedSlab->VentSlab(Item).HCoil_FluidIndex == 0) {
                                 ShowSevereError(state,
-                                                CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "Steam Properties not found.");
+                                                std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "Steam Properties not found.");
                                 if (SteamMessageNeeded)
                                     ShowContinueError(state, "Steam Fluid Properties should have been included in the input file.");
                                 ErrorsFound = true;
@@ -1016,7 +1016,7 @@ namespace VentilatedSlab {
                             state.dataVentilatedSlab->VentSlab(Item).HCoilType = state.dataVentilatedSlab->Heating_GasCoilType;
                         } else {
                             ShowSevereError(state,
-                                            CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(27) +
+                                            std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(27) +
                                                 "=\"" + state.dataIPShortCut->cAlphaArgs(27) + "\".");
                             ErrorsFound = true;
                             errFlag = true;
@@ -1031,7 +1031,7 @@ namespace VentilatedSlab {
                                           CurrentModuleObject);
                         if (IsNotOK) {
                             ShowContinueError(state,
-                                              CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(28) +
+                                              std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(28) +
                                                   "=\"" + state.dataIPShortCut->cAlphaArgs(28) + "\".");
                             ShowContinueError(state, "... not valid for " + cAlphaFields(27) + "=\"" + state.dataIPShortCut->cAlphaArgs(27) + "\".");
                             ErrorsFound = true;
@@ -1047,14 +1047,14 @@ namespace VentilatedSlab {
                         state.dataVentilatedSlab->VentSlab(Item).HCoilType == state.dataVentilatedSlab->Heating_ElectricCoilType) {
                         if (!lAlphaBlanks(29)) {
                             ShowWarningError(state,
-                                             CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" " + cAlphaFields(29) + "=\"" +
+                                             std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" " + cAlphaFields(29) + "=\"" +
                                                  state.dataIPShortCut->cAlphaArgs(29) + "\" not needed - ignored.");
                             ShowContinueError(state, "..It is used for hot water coils only.");
                         }
                     } else {
                         if (lAlphaBlanks(29)) {
                             ShowSevereError(state,
-                                            CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(29) +
+                                            std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(29) +
                                                 " is blank and must be entered.");
                             ErrorsFound = true;
                         }
@@ -1083,7 +1083,7 @@ namespace VentilatedSlab {
                     }
 
                 } else { // no heating coil
-                    ShowSevereError(state, CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" missing heating coil.");
+                    ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" missing heating coil.");
                     ShowContinueError(state,
                                       "a heating coil is required for " + cAlphaFields(26) + "=\"" + state.dataIPShortCut->cAlphaArgs(26) + "\".");
                     ErrorsFound = true;
@@ -1132,7 +1132,7 @@ namespace VentilatedSlab {
                                 state.dataVentilatedSlab->VentSlab(Item).CCoil_PlantTypeNum = TypeOf_CoilWaterDetailedFlatCooling;
                             } else {
                                 ShowSevereError(state,
-                                                "GetVentilatedSlabInput: " + CurrentModuleObject + "=\"" +
+                                                "GetVentilatedSlabInput: " + std::string{CurrentModuleObject} + "=\"" +
                                                     state.dataVentilatedSlab->VentSlab(Item).Name + "\", invalid");
                                 ShowContinueError(state, "For: " + cAlphaFields(30) + "=\"" + state.dataIPShortCut->cAlphaArgs(30) + "\".");
                                 ShowContinueError(state,
@@ -1143,7 +1143,7 @@ namespace VentilatedSlab {
                             }
                         } else {
                             ShowSevereError(state,
-                                            CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(29) +
+                                            std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(29) +
                                                 "=\"" + state.dataIPShortCut->cAlphaArgs(29) + "\".");
                             ErrorsFound = true;
                             errFlag = true;
@@ -1159,7 +1159,7 @@ namespace VentilatedSlab {
                                           "ZoneHVAC:VentilatedSlab ");
                         if (IsNotOK) {
                             ShowContinueError(state,
-                                              CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(31) +
+                                              std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(31) +
                                                   "=\"" + state.dataIPShortCut->cAlphaArgs(31) + "\".");
                             ShowContinueError(state, "... not valid for " + cAlphaFields(30) + "=\"" + state.dataIPShortCut->cAlphaArgs(30) + "\".");
                             ErrorsFound = true;
@@ -1180,7 +1180,7 @@ namespace VentilatedSlab {
 
                     if (lAlphaBlanks(32)) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(32) +
+                                        std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" invalid " + cAlphaFields(32) +
                                             " is blank and must be entered.");
                         ErrorsFound = true;
                     }
@@ -1199,7 +1199,7 @@ namespace VentilatedSlab {
                     }
 
                 } else { // No Cooling Coil
-                    ShowSevereError(state, CurrentModuleObject + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" missing cooling coil.");
+                    ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + state.dataIPShortCut->cAlphaArgs(1) + "\" missing cooling coil.");
                     ShowContinueError(state,
                                       "a cooling coil is required for " + cAlphaFields(26) + "=\"" + state.dataIPShortCut->cAlphaArgs(26) + "\".");
                     ErrorsFound = true;
@@ -1226,7 +1226,7 @@ namespace VentilatedSlab {
                 if (SELECT_CASE_var == state.dataVentilatedSlab->BothOption) { // 'HeatingAndCooling'
                     // Add cooling coil to component sets array when present
                     SetUpCompSets(state,
-                                  CurrentModuleObject + "-SYSTEM",
+                                  std::string{CurrentModuleObject} + "-SYSTEM",
                                   state.dataVentilatedSlab->VentSlab(Item).Name + "-SYSTEM",
                                   state.dataIPShortCut->cAlphaArgs(30),
                                   state.dataIPShortCut->cAlphaArgs(31),
@@ -1235,7 +1235,7 @@ namespace VentilatedSlab {
 
                     // Add heating coil to component sets array when cooling coil present
                     SetUpCompSets(state,
-                                  CurrentModuleObject + "-SYSTEM",
+                                  std::string{CurrentModuleObject} + "-SYSTEM",
                                   state.dataVentilatedSlab->VentSlab(Item).Name + "-SYSTEM",
                                   state.dataIPShortCut->cAlphaArgs(27),
                                   state.dataIPShortCut->cAlphaArgs(28),
@@ -1245,7 +1245,7 @@ namespace VentilatedSlab {
                 } else if (SELECT_CASE_var == state.dataVentilatedSlab->HeatingOption) { // 'Heating'
                     // Add heating coil to component sets array when no cooling coil present
                     SetUpCompSets(state,
-                                  CurrentModuleObject + "-SYSTEM",
+                                  std::string{CurrentModuleObject} + "-SYSTEM",
                                   state.dataVentilatedSlab->VentSlab(Item).Name + "-SYSTEM",
                                   state.dataIPShortCut->cAlphaArgs(27),
                                   state.dataIPShortCut->cAlphaArgs(28),
@@ -1255,7 +1255,7 @@ namespace VentilatedSlab {
                 } else if (SELECT_CASE_var == state.dataVentilatedSlab->CoolingOption) { // 'Cooling'
                     // Add cooling coil to component sets array when no heating coil present
                     SetUpCompSets(state,
-                                  CurrentModuleObject + "-SYSTEM",
+                                  std::string{CurrentModuleObject} + "-SYSTEM",
                                   state.dataVentilatedSlab->VentSlab(Item).Name + "-SYSTEM",
                                   state.dataIPShortCut->cAlphaArgs(30),
                                   state.dataIPShortCut->cAlphaArgs(31),
@@ -1277,7 +1277,7 @@ namespace VentilatedSlab {
         lAlphaBlanks.deallocate();
         lNumericBlanks.deallocate();
 
-        if (ErrorsFound) ShowFatalError(state, CurrentModuleObject + " errors occurred in input.  Program terminates.");
+        if (ErrorsFound) ShowFatalError(state, std::string{CurrentModuleObject} + " errors occurred in input.  Program terminates.");
 
         // Setup Report variables for the VENTILATED SLAB
         for (Item = 1; Item <= state.dataVentilatedSlab->NumOfVentSlabs; ++Item) {
@@ -2760,7 +2760,7 @@ namespace VentilatedSlab {
         int MSlabInletNode;
         int MSlabOutletNode;
         bool ErrorsFound(false); // Set to true if errors in input, fatal at end of routine
-        static std::string const CurrentModuleObject("ZoneHVAC:VentilatedSlab");
+        static constexpr std::string_view CurrentModuleObject("ZoneHVAC:VentilatedSlab");
 
         {
             auto const SELECT_CASE_var(state.dataVentilatedSlab->VentSlab(Item).CoilOption);
@@ -3809,7 +3809,7 @@ namespace VentilatedSlab {
         // of a space before the radiant cooling system shuts off the flow.
         Real64 const ZeroSystemResp(0.1); // Response below which the system response is really zero
         Real64 const TempCheckLimit(0.1); // Maximum allowed temperature difference between outlet temperature calculations
-        static std::string const CurrentModuleObject("ZoneHVAC:VentilatedSlab");
+        static constexpr std::string_view CurrentModuleObject("ZoneHVAC:VentilatedSlab");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int ConstrNum;         // Index for construction number in Construct derived type

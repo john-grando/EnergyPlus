@@ -117,7 +117,7 @@ public:
 
     int getNumSectionsFound(std::string const &SectionWord);
 
-    int getNumObjectsFound(EnergyPlusData &state, std::string const &ObjectWord);
+    int getNumObjectsFound(EnergyPlusData &state, std::string_view const ObjectWord);
 
     bool findDefault(std::string &default_value, json const &schema_field_obj);
 
@@ -130,7 +130,7 @@ public:
     std::pair<std::string, bool> getObjectItemValue(std::string const &field_value, json const &schema_field_obj);
 
     void getObjectItem(EnergyPlusData &state,
-                       std::string const &Object,
+                       std::string_view const Object,
                        int const Number,
                        Array1S_string Alphas,
                        int &NumAlphas,
@@ -142,26 +142,26 @@ public:
                        Optional<Array1D_string> AlphaFieldNames = _,
                        Optional<Array1D_string> NumericFieldNames = _);
 
-    int getIDFObjNum(EnergyPlusData &state, std::string const &Object, int const Number);
+    int getIDFObjNum(EnergyPlusData &state, std::string_view const Object, int const Number);
 
-    int getJSONObjNum(EnergyPlusData &state, std::string const &Object, int const Number);
+    int getJSONObjNum(EnergyPlusData &state, std::string_view const Object, int const Number);
 
     int getObjectItemNum(EnergyPlusData &state,
-                         std::string const &ObjType, // Object Type (ref: IDD Objects)
-                         std::string const &ObjName  // Name of the object type
+                         std::string_view ObjType, // Object Type (ref: IDD Objects)
+                         std::string_view ObjName  // Name of the object type
     );
 
     int getObjectItemNum(EnergyPlusData &state,
-                         std::string const &ObjType,     // Object Type (ref: IDD Objects)
-                         std::string const &NameTypeVal, // Object "name" field type ( used as search key )
-                         std::string const &ObjName      // Name of the object type
+                         std::string_view ObjType,     // Object Type (ref: IDD Objects)
+                         std::string_view NameTypeVal, // Object "name" field type ( used as search key )
+                         std::string_view ObjName      // Name of the object type
     );
 
     void rangeCheck(EnergyPlusData &state,
                     bool &ErrorsFound,                           // Set to true if error detected
-                    std::string const &WhatFieldString,          // Descriptive field for string
-                    std::string const &WhatObjectString,         // Descriptive field for object, Zone Name, etc.
-                    std::string const &ErrorLevel,               // 'Warning','Severe','Fatal')
+                    std::string_view WhatFieldString,          // Descriptive field for string
+                    std::string_view WhatObjectString,         // Descriptive field for object, Zone Name, etc.
+                    std::string_view ErrorLevel,               // 'Warning','Severe','Fatal')
                     Optional_string_const LowerBoundString = _,  // String for error message, if applicable
                     Optional_bool_const LowerBoundCondition = _, // Condition for error condition, if applicable
                     Optional_string_const UpperBoundString = _,  // String for error message, if applicable
@@ -173,7 +173,7 @@ public:
     void getMaxSchemaArgs(int &NumArgs, int &NumAlpha, int &NumNumeric);
 
     void getObjectDefMaxArgs(EnergyPlusData &state,
-                             std::string const &ObjectWord, // Object for definition
+                             std::string_view const ObjectWord, // Object for definition
                              int &NumArgs,                  // How many arguments (max) this Object can have
                              int &NumAlpha,                 // How many Alpha arguments (max) this Object can have
                              int &NumNumeric                // How many Numeric arguments (max) this Object can have
@@ -282,8 +282,9 @@ private:
 
     json const &getPatternProperties(EnergyPlusData &state, json const &schema_obj);
 
-    inline std::string convertToUpper(std::string s)
+    inline std::string convertToUpper(std::string_view input)
     {
+        std::string s{input};
         size_t len = s.size();
         for (size_t i = 0; i < len; ++i) {
             char c = s[i];
@@ -292,8 +293,8 @@ private:
         return s;
     }
 
-    using UnorderedObjectTypeMap = std::unordered_map<std::string, std::string>;
-    using UnorderedObjectCacheMap = std::unordered_map<std::string, ObjectCache>;
+    using ObjectTypeMap = std::map<std::string, std::string, std::less<>>;
+    using ObjectCacheMap = std::map<std::string, ObjectCache, std::less<>>;
     using UnusedObjectSet = std::set<ObjectInfo>;
 
     std::unique_ptr<IdfParser> idf_parser;
@@ -305,8 +306,8 @@ public:
     json epJSON;
 
 private:
-    UnorderedObjectTypeMap caseInsensitiveObjectMap;
-    UnorderedObjectCacheMap objectCacheMap;
+    ObjectTypeMap caseInsensitiveObjectMap;
+    ObjectCacheMap objectCacheMap;
     UnusedObjectSet unusedInputs;
     char s[129] = {0};
 

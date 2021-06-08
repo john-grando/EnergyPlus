@@ -144,10 +144,10 @@ namespace DesiccantDehumidifiers {
     using namespace Psychrometrics;
     using FluidProperties::GetSatDensityRefrig;
 
-    static std::string const fluidNameSteam("STEAM");
+    static constexpr std::string_view fluidNameSteam("STEAM");
 
     void SimDesiccantDehumidifier(EnergyPlusData &state,
-                                  std::string const &CompName,   // name of the dehumidifier unit
+                                  std::string_view CompName,   // name of the dehumidifier unit
                                   bool const FirstHVACIteration, // TRUE if 1st HVAC simulation of system timestep
                                   int &CompIndex)
     {
@@ -175,7 +175,7 @@ namespace DesiccantDehumidifiers {
         if (CompIndex == 0) {
             DesicDehumNum = UtilityRoutines::FindItemInList(CompName, state.dataDesiccantDehumidifiers->DesicDehum);
             if (DesicDehumNum == 0) {
-                ShowFatalError(state, "SimDesiccantDehumidifier: Unit not found=" + CompName);
+                ShowFatalError(state, "SimDesiccantDehumidifier: Unit not found=" + std::string{CompName});
             }
             CompIndex = DesicDehumNum;
         } else {
@@ -282,7 +282,7 @@ namespace DesiccantDehumidifiers {
 
         // SUBROUTINE PARAMETER DEFINITIONS:
         static constexpr std::string_view RoutineName("GetDesiccantDehumidifierInput: "); // include trailing blank space
-        static std::string const dehumidifierDesiccantNoFans("Dehumidifier:Desiccant:NoFans");
+        static constexpr std::string_view dehumidifierDesiccantNoFans("Dehumidifier:Desiccant:NoFans");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int DesicDehumIndex;               // Loop index
@@ -1803,7 +1803,7 @@ namespace DesiccantDehumidifiers {
 
         // SUBROUTINE PARAMETER DEFINITIONS:
         static constexpr std::string_view RoutineName("InitDesiccantDehumidifier");
-        static std::string const initCBVAV("InitCBVAV");
+        static constexpr std::string_view initCBVAV("InitCBVAV");
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         int ProcInNode;            // inlet node number

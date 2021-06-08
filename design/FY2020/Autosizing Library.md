@@ -194,7 +194,7 @@ The base class will be inherited by all sizer classes to minimize the coding eff
                                Real64 originalValue) = 0;
 
         static void reportSizerOutput(std::string const &CompType,
-                               std::string const &CompName,
+                               std::string_view CompName,
                                std::string const &VarDesc,
                                Real64 VarValue,
                                Optional_string_const UsrDesc = _,

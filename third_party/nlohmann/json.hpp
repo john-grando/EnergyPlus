@@ -19377,6 +19377,26 @@ class basic_json
         JSON_THROW(type_error::create(305, "cannot use operator[] with a string argument with " + std::string(type_name())));
     }
 
+    reference operator[](const std::string_view key) {
+      // implicitly convert null value to an empty object
+      if (is_null()) {
+        m_type = value_t::object;
+        m_value.object = create<object_t>();
+        assert_invariant();
+      }
+
+      // operator[] only works for objects
+      if (JSON_HEDLEY_LIKELY(is_object())) {
+        auto itr = m_value.object->find(key);
+        if (itr != m_value.object->end()) { return itr->second; }
+        return m_value.object->operator[](std::string{key});
+      }
+
+      JSON_THROW(type_error::create(
+          305, "cannot use operator[] with a string argument with " +
+                   std::string(type_name())));
+    }
+
     /*!
     @brief read-only access specified object element
 

@@ -133,7 +133,7 @@ namespace SimAirServingZones {
     void SolveWaterCoilController(EnergyPlusData &state,
                                   bool FirstHVACIteration,
                                   int AirLoopNum,
-                                  std::string const &CompName,
+                                  std::string_view CompName,
                                   int &CompIndex,
                                   std::string const &ControllerName,
                                   int ControllerIndex,
@@ -148,7 +148,7 @@ namespace SimAirServingZones {
     );
 
     void SimAirLoopComponent(EnergyPlusData &state,
-                             std::string const &CompName, // the component Name
+                             std::string_view CompName, // the component Name
                              int CompType_Num,            // numeric equivalent for component type
                              bool FirstHVACIteration,     // TRUE if first full HVAC iteration in an HVAC timestep
                              int AirLoopNum,              // Primary air loop number
@@ -190,13 +190,13 @@ namespace SimAirServingZones {
     );
 
     void CheckWaterCoilIsOnAirLoop(
-        EnergyPlusData &state, int CoilTypeNum, std::string const &CompType, std::string const &CompName, bool &WaterCoilOnAirLoop);
+        EnergyPlusData &state, int CoilTypeNum, std::string const &CompType, std::string_view CompName, bool &WaterCoilOnAirLoop);
 
-    bool CheckWaterCoilOnPrimaryAirLoopBranch(EnergyPlusData &state, int CoilTypeNum, std::string const &CompName);
+    bool CheckWaterCoilOnPrimaryAirLoopBranch(EnergyPlusData &state, int CoilTypeNum, std::string_view CompName);
 
-    bool CheckWaterCoilOnOASystem(EnergyPlusData &state, int CoilTypeNum, std::string const &CompName);
+    bool CheckWaterCoilOnOASystem(EnergyPlusData &state, int CoilTypeNum, std::string_view CompName);
 
-    bool CheckWaterCoilSystemOnAirLoopOrOASystem(EnergyPlusData &state, int CoilTypeNum, std::string const &CompName);
+    bool CheckWaterCoilSystemOnAirLoopOrOASystem(EnergyPlusData &state, int CoilTypeNum, std::string_view CompName);
 
 } // namespace SimAirServingZones
 

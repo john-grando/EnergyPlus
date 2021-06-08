@@ -140,15 +140,6 @@ using namespace ScheduleManager;
 using namespace DataSizing;
 using namespace FaultsManager;
 
-Array1D_string const CurrentModuleObjects(8,
-                                          {"AirLoopHVAC:OutdoorAirSystem",
-                                           "AirLoopHVAC:OutdoorAirSystem:EquipmentList",
-                                           "AirLoopHVAC:ControllerList",
-                                           "AvailabilityManagerAssignmentList",
-                                           "Controller:OutdoorAir",
-                                           "ZoneHVAC:EnergyRecoveryVentilator:Controller",
-                                           "Controller:MechanicalVentilation",
-                                           "OutdoorAir:Mixer"});
 
 Real64 OAGetFlowRate(EnergyPlusData &state, int OAPtr)
 {
@@ -190,7 +181,7 @@ int GetOAController(EnergyPlusData &state, std::string const &OAName)
     return CurrentOAController;
 }
 
-void ManageOutsideAirSystem(EnergyPlusData &state, std::string const &OASysName, bool const FirstHVACIteration, int const AirLoopNum, int &OASysNum)
+void ManageOutsideAirSystem(EnergyPlusData &state, std::string_view OASysName, bool const FirstHVACIteration, int const AirLoopNum, int &OASysNum)
 {
 
     // SUBROUTINE INFORMATION:
@@ -210,7 +201,7 @@ void ManageOutsideAirSystem(EnergyPlusData &state, std::string const &OASysName,
     if (OASysNum == 0) {
         OASysNum = UtilityRoutines::FindItemInList(OASysName, state.dataAirLoop->OutsideAirSys);
         if (OASysNum == 0) {
-            ShowFatalError(state, "ManageOutsideAirSystem: AirLoopHVAC:OutdoorAirSystem not found=" + OASysName);
+            ShowFatalError(state, "ManageOutsideAirSystem: AirLoopHVAC:OutdoorAirSystem not found=" + std::string{OASysName});
         }
     }
 
@@ -389,7 +380,7 @@ void SimOutsideAirSys(EnergyPlusData &state, int const OASysNum, bool const Firs
 
 void SimOAComponent(EnergyPlusData &state,
                     std::string const &CompType, // the component type
-                    std::string const &CompName, // the component Name
+                    std::string_view CompName, // the component Name
                     int const CompTypeNum,       // Component Type -- Integerized for this module
                     bool const FirstHVACIteration,
                     int &CompIndex,
@@ -717,7 +708,7 @@ void SimOAComponent(EnergyPlusData &state,
     }
 }
 
-void SimOAMixer(EnergyPlusData &state, std::string const &CompName, bool const FirstHVACIteration, int &CompIndex)
+void SimOAMixer(EnergyPlusData &state, std::string_view CompName, bool const FirstHVACIteration, int &CompIndex)
 {
 
     // SUBROUTINE INFORMATION:
@@ -741,7 +732,7 @@ void SimOAMixer(EnergyPlusData &state, std::string const &CompName, bool const F
         OAMixerNum = UtilityRoutines::FindItemInList(CompName, state.dataMixedAir->OAMixer);
         CompIndex = OAMixerNum;
         if (OAMixerNum == 0) {
-            ShowFatalError(state, "SimOAMixer: OutdoorAir:Mixer not found=" + CompName);
+            ShowFatalError(state, "SimOAMixer: OutdoorAir:Mixer not found=" + std::string{CompName});
         }
     } else {
         OAMixerNum = CompIndex;
@@ -856,13 +847,13 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
 
     if (!state.dataMixedAir->GetOASysInputFlag) return;
 
-    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects(CMO_OASystem), TotalArgs, NumAlphas, NumNums);
+    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects[CMO_OASystem], TotalArgs, NumAlphas, NumNums);
     MaxNums = max(MaxNums, NumNums);
     MaxAlphas = max(MaxAlphas, NumAlphas);
-    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects(CMO_AirLoopEqList), TotalArgs, NumAlphas, NumNums);
+    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects[CMO_AirLoopEqList], TotalArgs, NumAlphas, NumNums);
     MaxNums = max(MaxNums, NumNums);
     MaxAlphas = max(MaxAlphas, NumAlphas);
-    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects(CMO_ControllerList), TotalArgs, NumAlphas, NumNums);
+    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects[CMO_ControllerList], TotalArgs, NumAlphas, NumNums);
     MaxNums = max(MaxNums, NumNums);
     MaxAlphas = max(MaxAlphas, NumAlphas);
 
@@ -873,7 +864,7 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
     lAlphaBlanks.dimension(MaxAlphas, true);
     lNumericBlanks.dimension(MaxNums, true);
 
-    CurrentModuleObject = CurrentModuleObjects(CMO_ControllerList);
+    CurrentModuleObject = CurrentModuleObjects[CMO_ControllerList];
     state.dataMixedAir->NumControllerLists = state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObject);
 
     state.dataMixedAir->ControllerLists.allocate(state.dataMixedAir->NumControllerLists);
@@ -912,15 +903,15 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
                     for (int PreviousListControllerNum = 1; PreviousListControllerNum <= previousList.NumControllers; ++PreviousListControllerNum) {
                         if ((previousList.ControllerType(PreviousListControllerNum) == thisControllerList.ControllerType(CompNum)) &&
                             (previousList.ControllerName(PreviousListControllerNum) == thisControllerList.ControllerName(CompNum))) {
-                            ShowSevereError(state, "Controller instance repeated in multiple " + CurrentModuleObject + " objects");
-                            ShowContinueError(state, "Found in " + CurrentModuleObject + " = " + thisControllerList.Name);
-                            ShowContinueError(state, "Also found in " + CurrentModuleObject + " = " + previousList.Name);
+                            ShowSevereError(state, "Controller instance repeated in multiple " + std::string{CurrentModuleObject} + " objects");
+                            ShowContinueError(state, "Found in " + std::string{CurrentModuleObject} + " = " + thisControllerList.Name);
+                            ShowContinueError(state, "Also found in " + std::string{CurrentModuleObject} + " = " + previousList.Name);
                             ErrorsFound = true;
                         }
                     }
                 }
             } else {
-                ShowSevereError(state, "For " + CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(AlphaNum));
+                ShowSevereError(state, "For " + std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(AlphaNum));
                 ShowContinueError(state, "...entered=\"" + AlphArray(AlphaNum) + "\", should be Controller:WaterCoil or Controller:OutdoorAir.");
                 ErrorsFound = true;
             }
@@ -928,7 +919,7 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
         }
     }
 
-    CurrentModuleObject = CurrentModuleObjects(CMO_OASystem);
+    CurrentModuleObject = CurrentModuleObjects[CMO_OASystem];
 
     state.dataAirLoop->NumOASystems = state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObject);
 
@@ -968,10 +959,10 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
         TestCompSet(state, CurrentModuleObject, AlphArray(1), "UNDEFINED", "UNDEFINED", "Air Nodes");
 
         if (!lAlphaBlanks(3)) {
-            ListNum = state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CurrentModuleObjects(CMO_AirLoopEqList), ComponentListName);
+            ListNum = state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CurrentModuleObjects[CMO_AirLoopEqList], ComponentListName);
             if (ListNum > 0) {
                 state.dataInputProcessing->inputProcessor->getObjectItem(
-                    state, CurrentModuleObjects(CMO_AirLoopEqList), ListNum, AlphArray, NumAlphas, NumArray, NumNums, IOStat);
+                    state, CurrentModuleObjects[CMO_AirLoopEqList], ListNum, AlphArray, NumAlphas, NumArray, NumNums, IOStat);
                 NumInList = (NumAlphas - 1) / 2;
                 state.dataAirLoop->OutsideAirSys(OASysNum).NumComponents = NumInList;
                 state.dataAirLoop->OutsideAirSys(OASysNum).ComponentName.allocate(NumInList);
@@ -996,11 +987,11 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
                 }
             } else {
                 ShowSevereError(
-                    state, CurrentModuleObject + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(3) + "=\"" + AlphArray(3) + "\" not found.");
+                    state, std::string{CurrentModuleObject} + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(3) + "=\"" + AlphArray(3) + "\" not found.");
                 ErrorsFound = true;
             }
         } else {
-            ShowSevereError(state, CurrentModuleObject + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(3) + " is blank and must be entered.");
+            ShowSevereError(state, std::string{CurrentModuleObject} + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(3) + " is blank and must be entered.");
             ErrorsFound = true;
         }
 
@@ -1008,10 +999,10 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
         NumSimpControllers = 0;
         if (!lAlphaBlanks(2)) {
             ListNum =
-                state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CurrentModuleObjects(CMO_ControllerList), ControllerListName);
+                state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CurrentModuleObjects[CMO_ControllerList], ControllerListName);
             if (ListNum > 0) {
                 state.dataInputProcessing->inputProcessor->getObjectItem(
-                    state, CurrentModuleObjects(CMO_ControllerList), ListNum, AlphArray, NumAlphas, NumArray, NumNums, IOStat);
+                    state, CurrentModuleObjects[CMO_ControllerList], ListNum, AlphArray, NumAlphas, NumArray, NumNums, IOStat);
                 NumInList = (NumAlphas - 1) / 2;
                 state.dataAirLoop->OutsideAirSys(OASysNum).NumControllers = NumInList;
                 state.dataAirLoop->OutsideAirSys(OASysNum).ControllerName.allocate(NumInList);
@@ -1021,23 +1012,23 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
                     state.dataAirLoop->OutsideAirSys(OASysNum).ControllerName(InListNum) = AlphArray(InListNum * 2 + 1);
                     state.dataAirLoop->OutsideAirSys(OASysNum).ControllerType(InListNum) = AlphArray(InListNum * 2);
                     if (!UtilityRoutines::SameString(state.dataAirLoop->OutsideAirSys(OASysNum).ControllerType(InListNum),
-                                                     CurrentModuleObjects(CMO_OAController))) {
+                                                     CurrentModuleObjects[CMO_OAController])) {
                         ++NumSimpControllers;
                     }
                 }
             } else {
                 ShowSevereError(
-                    state, CurrentModuleObject + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(2) + "=\"" + AlphArray(2) + "\" not found.");
+                    state, std::string{CurrentModuleObject} + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(2) + "=\"" + AlphArray(2) + "\" not found.");
                 ErrorsFound = true;
             }
         } else {
             if (state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, "AirLoopHVAC:DedicatedOutdoorAirSystem") == 0) {
                 ShowSevereError(state,
-                                CurrentModuleObject + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(2) + " is blank and must be entered.");
+                                std::string{CurrentModuleObject} + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(2) + " is blank and must be entered.");
                 ErrorsFound = true;
             } else {
                 ShowWarningError(state,
-                                 CurrentModuleObject + " = \"" + AlphArray(1) + "\": blank " + cAlphaFields(2) +
+                                 std::string{CurrentModuleObject} + " = \"" + AlphArray(1) + "\": blank " + cAlphaFields(2) +
                                      " must be used with AirLoopHVAC:DedicatedOutdoorAirSystem.");
             }
         }
@@ -1046,10 +1037,10 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
 
         if (!lAlphaBlanks(4)) {
             ListNum =
-                state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CurrentModuleObjects(CMO_SysAvailMgrList), AvailManagerListName);
+                state.dataInputProcessing->inputProcessor->getObjectItemNum(state, CurrentModuleObjects[CMO_SysAvailMgrList], AvailManagerListName);
             if (ListNum <= 0) {
                 ShowSevereError(
-                    state, CurrentModuleObject + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(4) + "=\"" + AlphArray(4) + "\" not found.");
+                    state, std::string{CurrentModuleObject} + " = \"" + AlphArray(1) + "\" invalid " + cAlphaFields(4) + "=\"" + AlphArray(4) + "\" not found.");
                 ErrorsFound = true;
             }
         }
@@ -1148,7 +1139,7 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
                     state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType_Num(CompNum) = VRFTerminalUnit;
                 } else {
                     ShowSevereError(state,
-                                    CurrentModuleObject + " = \"" + AlphArray(1) + "\" invalid Outside Air Component=\"" +
+                                    std::string{CurrentModuleObject} + " = \"" + AlphArray(1) + "\" invalid Outside Air Component=\"" +
                                         state.dataAirLoop->OutsideAirSys(OASysNum).ComponentType(CompNum) + "\".");
                     ErrorsFound = true;
                 }
@@ -1158,7 +1149,7 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
         // loop through the controllers in the controller list for OA system and save the pointer to the OA controller index
         for (int OAControllerNum = 1; OAControllerNum <= state.dataAirLoop->OutsideAirSys(OASysNum).NumControllers; ++OAControllerNum) {
             if (UtilityRoutines::SameString(state.dataAirLoop->OutsideAirSys(OASysNum).ControllerType(OAControllerNum),
-                                            CurrentModuleObjects(CMO_OAController))) {
+                                            CurrentModuleObjects[CMO_OAController])) {
                 state.dataAirLoop->OutsideAirSys(OASysNum).OAControllerName =
                     state.dataAirLoop->OutsideAirSys(OASysNum).ControllerName(OAControllerNum);
                 break;
@@ -1167,7 +1158,7 @@ void GetOutsideAirSysInputs(EnergyPlusData &state)
     }
 
     if (ErrorsFound) {
-        ShowFatalError(state, std::string{RoutineName} + "Errors found in getting " + CurrentModuleObject + '.');
+        ShowFatalError(state, std::string{RoutineName} + "Errors found in getting " + std::string{CurrentModuleObject} + '.');
     }
 
     AlphArray.deallocate();
@@ -1258,13 +1249,13 @@ void GetOAControllerInputs(EnergyPlusData &state)
 
     FaultsManager::CheckAndReadFaults(state);
 
-    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects(CMO_OAController), NumArg, NumAlphas, NumNums);
+    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects[CMO_OAController], NumArg, NumAlphas, NumNums);
     MaxAlphas = NumAlphas;
     MaxNums = NumNums;
-    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects(CMO_ERVController), NumArg, NumAlphas, NumNums);
+    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects[CMO_ERVController], NumArg, NumAlphas, NumNums);
     MaxAlphas = max(MaxAlphas, NumAlphas);
     MaxNums = max(MaxNums, NumNums);
-    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects(CMO_MechVentilation), NumArg, NumAlphas, NumNums);
+    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects[CMO_MechVentilation], NumArg, NumAlphas, NumNums);
     MaxAlphas = max(MaxAlphas, NumAlphas);
     MaxNums = max(MaxNums, NumNums);
 
@@ -1280,7 +1271,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
 
     // If there are ERV controllers, they have been filled before now NumOAControllers includes the count of NumERVControllers
     if (state.dataMixedAir->NumOAControllers > state.dataMixedAir->NumERVControllers) {
-        CurrentModuleObject = CurrentModuleObjects(CMO_OAController);
+        CurrentModuleObject = CurrentModuleObjects[CMO_OAController];
         int currentOAControllerNum = 0;
         for (OutAirNum = state.dataMixedAir->NumERVControllers + 1; OutAirNum <= state.dataMixedAir->NumOAControllers; ++OutAirNum) {
             ++currentOAControllerNum;
@@ -1342,14 +1333,14 @@ void GetOAControllerInputs(EnergyPlusData &state)
             lAlphaBlanks.deallocate();
             cAlphaFields.deallocate();
             cNumericFields.deallocate();
-            ShowFatalError(state, std::string{RoutineName} + "Errors found in getting " + CurrentModuleObject + " inputs.");
+            ShowFatalError(state, std::string{RoutineName} + "Errors found in getting " + std::string{CurrentModuleObject} + " inputs.");
         }
     }
 
     state.dataMixedAir->GetOAControllerInputFlag = false;
 
     // Process Controller:MechanicalVentilation objects
-    CurrentModuleObject = CurrentModuleObjects(CMO_MechVentilation);
+    CurrentModuleObject = CurrentModuleObjects[CMO_MechVentilation];
     state.dataMixedAir->NumVentMechControllers = state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObject);
     if (state.dataMixedAir->NumVentMechControllers > 0) {
         state.dataMixedAir->VentilationMechanical.allocate(state.dataMixedAir->NumVentMechControllers);
@@ -1383,7 +1374,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                 thisVentilationMechanical.SchPtr = GetScheduleIndex(state, AlphArray(2)); // convert schedule name to pointer
                 if (thisVentilationMechanical.SchPtr == 0) {
                     ShowSevereError(
-                        state, CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(2) + "=\"" + AlphArray(2) + "\" not found.");
+                        state, std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(2) + "=\"" + AlphArray(2) + "\" not found.");
                     ErrorsFound = true;
                 }
             }
@@ -1395,7 +1386,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                 thisVentilationMechanical.DCVFlag = false;
             } else {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid value " + cAlphaFields(3) + "=\"" + AlphArray(3) + "\".");
+                                std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid value " + cAlphaFields(3) + "=\"" + AlphArray(3) + "\".");
                 ShowContinueError(state, "...Valid values are \"Yes\" or \"No\".");
                 ErrorsFound = true;
             }
@@ -1411,7 +1402,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.SystemOAMethod = SOAM_IAQP;
                     if (!state.dataContaminantBalance->Contaminant.CO2Simulation) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
+                                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
                                             "\" requires CO2 simulation.");
                         ShowContinueError(state, "The choice must be Yes for the field Carbon Dioxide Concentration in ZoneAirContaminantBalance");
                         ErrorsFound = true;
@@ -1421,7 +1412,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.SystemOAMethod = SOAM_ProportionalControlSchOcc;
                     if (!state.dataContaminantBalance->Contaminant.CO2Simulation) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
+                                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
                                             "\" requires CO2 simulation.");
                         ShowContinueError(state, "The choice must be Yes for the field Carbon Dioxide Concentration in ZoneAirContaminantBalance");
                         ErrorsFound = true;
@@ -1431,7 +1422,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.SystemOAMethod = SOAM_ProportionalControlDesOcc;
                     if (!state.dataContaminantBalance->Contaminant.CO2Simulation) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
+                                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
                                             "\" requires CO2 simulation.");
                         ShowContinueError(state, "The choice must be Yes for the field Carbon Dioxide Concentration in ZoneAirContaminantBalance");
                         ErrorsFound = true;
@@ -1440,7 +1431,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.SystemOAMethod = SOAM_ProportionalControlDesOARate;
                     if (!state.dataContaminantBalance->Contaminant.CO2Simulation) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
+                                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
                                             "\" requires CO2 simulation.");
                         ShowContinueError(state, "The choice must be Yes for the field Carbon Dioxide Concentration in ZoneAirContaminantBalance");
                         ErrorsFound = true;
@@ -1450,7 +1441,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.SystemOAMethod = SOAM_IAQPGC;
                     if (!state.dataContaminantBalance->Contaminant.GenericContamSimulation) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
+                                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
                                             "\" requires generic contaminant simulation.");
                         ShowContinueError(state,
                                           "The choice must be Yes for the field Generic Contaminant Concentration in ZoneAirContaminantBalance");
@@ -1461,7 +1452,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.SystemOAMethod = SOAM_IAQPCOM;
                     if (!state.dataContaminantBalance->Contaminant.GenericContamSimulation) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
+                                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
                                             "\" requires generic contaminant simulation.");
                         ShowContinueError(state,
                                           "The choice must be Yes for the field Generic Contaminant Concentration in ZoneAirContaminantBalance");
@@ -1469,7 +1460,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     }
                     if (!state.dataContaminantBalance->Contaminant.CO2Simulation) {
                         ShowSevereError(state,
-                                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
+                                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" valid " + cAlphaFields(2) + "=\"" + AlphArray(2) +
                                             "\" requires CO2 simulation.");
                         ShowContinueError(state, "The choice must be Yes for the field Carbon Dioxide Concentration in ZoneAirContaminantBalance");
                         ErrorsFound = true;
@@ -1477,7 +1468,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                 } else { // If specified incorrectly, show errors
                     thisVentilationMechanical.SystemOAMethod = SOAM_ZoneSum;
                     ShowWarningError(state,
-                                     CurrentModuleObject + "=\"" + AlphArray(1) + "\" incorrect specification for " + cAlphaFields(4) +
+                                     std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" incorrect specification for " + cAlphaFields(4) +
                                          ", the ZoneSum method will be used.");
                     // ErrorsFound=.TRUE.
                 }
@@ -1504,7 +1495,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     state.dataMixedAir->DesignSpecOAObjIndex(groupNum) = ObjIndex;
 
                     if (ObjIndex == 0) {
-                        ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + "=\"" + thisVentilationMechanical.Name + "\", invalid");
+                        ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name + "\", invalid");
                         ShowContinueError(state,
                                           "... not found " + cAlphaFields((groupNum - 1) * 3 + 6) + "=\"" +
                                               state.dataMixedAir->DesignSpecOAObjName(groupNum) + "\".");
@@ -1521,7 +1512,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
 
                     if (ObjIndex == 0) {
                         // Cannot find the design specification Zone Air Distribution object
-                        ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + "=\"" + thisVentilationMechanical.Name + "\", invalid");
+                        ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name + "\", invalid");
                         ShowContinueError(state,
                                           "... not found " + cAlphaFields((groupNum - 1) * 3 + 7) + "=\"" +
                                               state.dataMixedAir->DesignSpecZoneADObjName(groupNum) + "\".");
@@ -1538,7 +1529,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                         MechVentZoneCount += state.dataHeatBal->ZoneList(ZoneListNum).NumOfZones;
                     } else {
                         ShowWarningError(
-                            state, CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields((groupNum - 1) * 3 + 5) + " not found.");
+                            state, std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields((groupNum - 1) * 3 + 5) + " not found.");
                         ShowContinueError(
                             state, "Missing " + cAlphaFields((groupNum - 1) * 3 + 5) + " = " + state.dataMixedAir->VentMechZoneOrListName(groupNum));
                         ErrorsFound = true;
@@ -1581,7 +1572,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     if (any_eq(thisVentilationMechanical.VentMechZone, ZoneNum)) {
                         //          Disregard duplicate zone names, show warning and do not store data for this zone
                         ShowWarningError(state,
-                                         "Zone name = " + state.dataMixedAir->VentMechZoneOrListName(groupNum) + " for " + CurrentModuleObject +
+                                         "Zone name = " + state.dataMixedAir->VentMechZoneOrListName(groupNum) + " for " + std::string{CurrentModuleObject} +
                                              " object = " + thisVentilationMechanical.Name);
                         ShowContinueError(state, "is specified more than once. The first ventilation values specified for this zone will be used");
                         ShowContinueError(state, "and the rest will be ignored. Simulation will continue..");
@@ -1643,7 +1634,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                                 ShowWarningError(state,
                                                  "Zone name = " + state.dataHeatBal->Zone(ZoneNum).Name +
                                                      " in ZoneList = " + state.dataMixedAir->VentMechZoneOrListName(groupNum) + " for " +
-                                                     CurrentModuleObject + " object = " + thisVentilationMechanical.Name);
+                                                     std::string{CurrentModuleObject} + " object = " + thisVentilationMechanical.Name);
                                 ShowContinueError(state, "is a duplicate. The first ventilation values specified for this zone will be used ");
                                 ShowContinueError(state, "and the rest will be ignored. The simulation will continue...");
                             } else {
@@ -1714,7 +1705,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                         if (thisVentilationMechanical.ZoneOAPeopleRate(ventMechZoneNum) == 0.0 &&
                             thisVentilationMechanical.ZoneOAAreaRate(ventMechZoneNum) == 0.0) {
                             ShowSevereError(state,
-                                            std::string{RoutineName} + CurrentModuleObject + "=\"" + thisVentilationMechanical.Name +
+                                            std::string{RoutineName} + std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name +
                                                 "\", invalid input with System Outdoor Air Method = ProportionalControlBasedOnDesignOARate.");
                             ShowContinueError(state,
                                               " The values of Outdoor Air Flow per Person and Outdoor Air Flow per Zone Floor Area in the same "
@@ -1731,7 +1722,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.ZoneOAACHRate = 0.0;
                     thisVentilationMechanical.ZoneOAFlowMethod(ventMechZoneNum) = OAFlowPPer;
                     thisVentilationMechanical.ZoneOASchPtr(ventMechZoneNum) = DataGlobalConstants::ScheduleAlwaysOn;
-                    ShowWarningError(state, std::string{RoutineName} + CurrentModuleObject + "=\"" + thisVentilationMechanical.Name);
+                    ShowWarningError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name);
                     ShowContinueError(state,
                                       "Cannot locate a matching DesignSpecification:OutdoorAir object for Zone=\"" +
                                           thisVentilationMechanical.VentMechZoneName(ventMechZoneNum) + "\".");
@@ -1748,7 +1739,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     thisVentilationMechanical.ZoneADEffCooling(ventMechZoneNum) = 1.0;
                     thisVentilationMechanical.ZoneADEffHeating(ventMechZoneNum) = 1.0;
                     thisVentilationMechanical.ZoneSecondaryRecirculation(ventMechZoneNum) = 0.0;
-                    ShowWarningError(state, std::string{RoutineName} + CurrentModuleObject + "=\"" + thisVentilationMechanical.Name);
+                    ShowWarningError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name);
                     ShowContinueError(state,
                                       "Cannot locate a matching DesignSpecification:ZoneAirDistribution object for Zone=\"" +
                                           thisVentilationMechanical.VentMechZoneName(ventMechZoneNum) + "\".");
@@ -1768,7 +1759,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                 if (thisVentilationMechanical.SystemOAMethod == SOAM_ProportionalControlSchOcc) {
                     if (thisVentilationMechanical.ZoneOAACHRate(jZone) > 0.0 || thisVentilationMechanical.ZoneOAFlowRate(jZone) > 0.0) {
                         ShowWarningError(state,
-                                         CurrentModuleObject + "=\"" + thisVentilationMechanical.Name + "\", inappropriate outdoor air method");
+                                         std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name + "\", inappropriate outdoor air method");
                         ShowContinueError(state,
                                           "Inappropriate method for Design Specification Outdoor Air Object Name=\"" +
                                               thisVentilationMechanical.ZoneDesignSpecOAObjName(jZone) + "\".");
@@ -1781,7 +1772,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                 if (thisVentilationMechanical.SystemOAMethod == SOAM_ProportionalControlDesOcc) {
                     if (thisVentilationMechanical.ZoneOAACHRate(jZone) > 0.0 || thisVentilationMechanical.ZoneOAFlowRate(jZone) > 0.0) {
                         ShowWarningError(state,
-                                         CurrentModuleObject + "=\"" + thisVentilationMechanical.Name + "\", inappropriate outdoor air method");
+                                         std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name + "\", inappropriate outdoor air method");
                         ShowContinueError(state,
                                           "Inappropriate method for Design Specification Outdoor Air Object Name=\"" +
                                               thisVentilationMechanical.ZoneDesignSpecOAObjName(jZone) + "\".");
@@ -1827,7 +1818,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                                                         (state.dataDefineEquipment->AirDistUnit(ADUNum).EquipType_Num(EquipNum) ==
                                                          DataDefineEquip::iZnAirLoopEquipType::DualDuctVAVOutdoorAir)) {
                                                         ShowWarningError(state,
-                                                                         CurrentModuleObject + "=\"" + thisVentilationMechanical.Name +
+                                                                         std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name +
                                                                              "\", inappropriate use of Zone secondary recirculation");
                                                         ShowContinueError(state,
                                                                           "A zone secondary recirculation fraction is specified for zone served by ");
@@ -1853,14 +1844,14 @@ void GetOAControllerInputs(EnergyPlusData &state)
                 }
                 if (thisVentilationMechanical.ZoneDesignSpecOAObjName(jZone).empty()) {
                     ShowSevereError(state,
-                                    CurrentModuleObject + "=\"" + thisVentilationMechanical.Name +
+                                    std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name +
                                         "\", Design Specification Outdoor Air Object Name blank");
                     ShowContinueError(state, "For Zone=\"" + thisVentilationMechanical.VentMechZoneName(jZone) + "\".");
                     ShowContinueError(state, "This field either needs to be filled in in this object or Sizing:Zone object.");
                     ShowContinueError(state, "For this run, default values for these fields will be used.");
                 }
                 if (thisVentilationMechanical.ZoneOAPeopleRate(jZone) <= 0.0 && thisVentilationMechanical.DCVFlag) {
-                    ShowWarningError(state, CurrentModuleObject + "=\"" + thisVentilationMechanical.Name + "\", Zone OA/person rate");
+                    ShowWarningError(state, std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name + "\", Zone OA/person rate");
                     ShowContinueError(state, "For Zone=\"" + thisVentilationMechanical.VentMechZoneName(jZone) + "\".");
                     ShowContinueError(state,
                                       "Zone outside air per person rate not set in Design Specification Outdoor Air Object=\"" +
@@ -1868,7 +1859,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                 }
 
                 if (thisVentilationMechanical.ZoneOAAreaRate(jZone) < 0.0) {
-                    ShowSevereError(state, CurrentModuleObject + "=\"" + thisVentilationMechanical.Name + "\", invalid Outdoor Air flow per area");
+                    ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name + "\", invalid Outdoor Air flow per area");
                     ShowContinueError(state, "For Zone=\"" + thisVentilationMechanical.VentMechZoneName(jZone) + "\".");
                     ShowContinueError(state,
                                       "invalid Outdoor Air flow per area specified in object=\"" +
@@ -1876,7 +1867,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
                     ErrorsFound = true;
                 }
                 if (thisVentilationMechanical.ZoneOAPeopleRate(jZone) < 0.0) {
-                    ShowSevereError(state, CurrentModuleObject + "=\"" + thisVentilationMechanical.Name + "\", invalid Outdoor Air flow per person");
+                    ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + thisVentilationMechanical.Name + "\", invalid Outdoor Air flow per person");
                     ShowContinueError(state, "For Zone=\"" + thisVentilationMechanical.VentMechZoneName(jZone) + "\".");
                     ShowContinueError(state,
                                       "invalid Outdoor Air flow per person specified in object \"" +
@@ -1893,12 +1884,12 @@ void GetOAControllerInputs(EnergyPlusData &state)
             if (state.dataMixedAir->OAController(OAControllerNum).VentMechObjectNum == 0 &&
                 !state.dataMixedAir->OAController(OAControllerNum).VentilationMechanicalName.empty()) {
                 ShowSevereError(state,
-                                CurrentModuleObject + "=\"" + state.dataMixedAir->OAController(OAControllerNum).VentilationMechanicalName +
+                                std::string{CurrentModuleObject} + "=\"" + state.dataMixedAir->OAController(OAControllerNum).VentilationMechanicalName +
                                     "\", non-match to Controller:OutdoorAir");
                 ShowContinueError(state,
                                   "Invalid specified in Controller:OutdoorAir object = " + state.dataMixedAir->OAController(OAControllerNum).Name);
                 ShowContinueError(state,
-                                  CurrentModuleObject + " object name must match the " + CurrentModuleObject +
+                                  std::string{CurrentModuleObject} + " object name must match the " + std::string{CurrentModuleObject} +
                                       " object name specified in Controller:OutdoorAir.");
                 ErrorsFound = true;
             }
@@ -1971,7 +1962,7 @@ void GetOAControllerInputs(EnergyPlusData &state)
     cNumericFields.deallocate();
 
     if (ErrorsFound) {
-        ShowFatalError(state, std::string{RoutineName} + "Errors found when getting " + CurrentModuleObject + " inputs.");
+        ShowFatalError(state, std::string{RoutineName} + "Errors found when getting " + std::string{CurrentModuleObject} + " inputs.");
     }
 }
 
@@ -1983,9 +1974,9 @@ void AllocateOAControllers(EnergyPlusData &state)
 
     if (state.dataMixedAir->AllocateOAControllersFlag) {
         state.dataMixedAir->NumOAControllers =
-            state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObjects(CMO_OAController));
+            state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObjects[CMO_OAController]);
         state.dataMixedAir->NumERVControllers =
-            state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObjects(CMO_ERVController));
+            state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObjects[CMO_ERVController]);
         state.dataMixedAir->NumOAControllers += state.dataMixedAir->NumERVControllers;
         state.dataMixedAir->OAController.allocate(state.dataMixedAir->NumOAControllers);
         state.dataMixedAir->OAControllerUniqueNames.reserve(static_cast<unsigned>(state.dataMixedAir->NumOAControllers));
@@ -2034,7 +2025,7 @@ void GetOAMixerInputs(EnergyPlusData &state)
 
     if (!state.dataMixedAir->GetOAMixerInputFlag) return;
 
-    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects(CMO_OAMixer), NumArg, NumAlphas, NumNums);
+    state.dataInputProcessing->inputProcessor->getObjectDefMaxArgs(state, CurrentModuleObjects[CMO_OAMixer], NumArg, NumAlphas, NumNums);
 
     AlphArray.allocate(NumAlphas);
     NumArray.dimension(NumNums, 0.0);
@@ -2043,7 +2034,7 @@ void GetOAMixerInputs(EnergyPlusData &state)
     cAlphaFields.allocate(NumAlphas);
     cNumericFields.allocate(NumNums);
 
-    CurrentModuleObject = CurrentModuleObjects(CMO_OAMixer);
+    CurrentModuleObject = CurrentModuleObjects[CMO_OAMixer];
 
     state.dataMixedAir->NumOAMixers = state.dataInputProcessing->inputProcessor->getNumObjectsFound(state, CurrentModuleObject);
 
@@ -2108,19 +2099,19 @@ void GetOAMixerInputs(EnergyPlusData &state)
             // Check for dupes in the four nodes.
             if (state.dataMixedAir->OAMixer(OutAirNum).MixNode == state.dataMixedAir->OAMixer(OutAirNum).InletNode) {
                 ShowSevereError(state,
-                                CurrentModuleObject + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(3) + " = " +
+                                std::string{CurrentModuleObject} + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(3) + " = " +
                                     state.dataLoopNodes->NodeID(state.dataMixedAir->OAMixer(OutAirNum).InletNode) + " duplicates the " +
                                     cAlphaFields(2) + '.');
                 ErrorsFound = true;
             } else if (state.dataMixedAir->OAMixer(OutAirNum).MixNode == state.dataMixedAir->OAMixer(OutAirNum).RelNode) {
                 ShowSevereError(state,
-                                CurrentModuleObject + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(4) + " = " +
+                                std::string{CurrentModuleObject} + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(4) + " = " +
                                     state.dataLoopNodes->NodeID(state.dataMixedAir->OAMixer(OutAirNum).RelNode) + " duplicates the " +
                                     cAlphaFields(2) + '.');
                 ErrorsFound = true;
             } else if (state.dataMixedAir->OAMixer(OutAirNum).MixNode == state.dataMixedAir->OAMixer(OutAirNum).RetNode) {
                 ShowSevereError(state,
-                                CurrentModuleObject + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(5) + " = " +
+                                std::string{CurrentModuleObject} + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(5) + " = " +
                                     state.dataLoopNodes->NodeID(state.dataMixedAir->OAMixer(OutAirNum).RetNode) + " duplicates the " +
                                     cAlphaFields(2) + '.');
                 ErrorsFound = true;
@@ -2128,13 +2119,13 @@ void GetOAMixerInputs(EnergyPlusData &state)
 
             if (state.dataMixedAir->OAMixer(OutAirNum).InletNode == state.dataMixedAir->OAMixer(OutAirNum).RelNode) {
                 ShowSevereError(state,
-                                CurrentModuleObject + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(4) + " = " +
+                                std::string{CurrentModuleObject} + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(4) + " = " +
                                     state.dataLoopNodes->NodeID(state.dataMixedAir->OAMixer(OutAirNum).RelNode) + " duplicates the " +
                                     cAlphaFields(3) + '.');
                 ErrorsFound = true;
             } else if (state.dataMixedAir->OAMixer(OutAirNum).InletNode == state.dataMixedAir->OAMixer(OutAirNum).RetNode) {
                 ShowSevereError(state,
-                                CurrentModuleObject + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(5) + " = " +
+                                std::string{CurrentModuleObject} + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(5) + " = " +
                                     state.dataLoopNodes->NodeID(state.dataMixedAir->OAMixer(OutAirNum).RetNode) + " duplicates the " +
                                     cAlphaFields(3) + '.');
                 ErrorsFound = true;
@@ -2142,7 +2133,7 @@ void GetOAMixerInputs(EnergyPlusData &state)
 
             if (state.dataMixedAir->OAMixer(OutAirNum).RelNode == state.dataMixedAir->OAMixer(OutAirNum).RetNode) {
                 ShowSevereError(state,
-                                CurrentModuleObject + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(5) + " = " +
+                                std::string{CurrentModuleObject} + " = " + state.dataMixedAir->OAMixer(OutAirNum).Name + ' ' + cAlphaFields(5) + " = " +
                                     state.dataLoopNodes->NodeID(state.dataMixedAir->OAMixer(OutAirNum).RetNode) + " duplicates the " +
                                     cAlphaFields(4) + '.');
                 ErrorsFound = true;
@@ -2160,7 +2151,7 @@ void GetOAMixerInputs(EnergyPlusData &state)
 }
 
 void ProcessOAControllerInputs(EnergyPlusData &state,
-                               std::string const &CurrentModuleObject,
+                               std::string_view CurrentModuleObject,
                                int const OutAirNum,
                                Array1D_string const &AlphArray,
                                int &NumAlphas,
@@ -2240,7 +2231,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
                                                                            ObjectIsNotParent);
     if (!CheckOutAirNodeNumber(state, state.dataMixedAir->OAController(OutAirNum).OANode)) {
         ShowWarningError(
-            state, CurrentModuleObject + "=\"" + AlphArray(1) + "\": " + cAlphaFields(5) + "=\"" + AlphArray(5) + "\" is not an OutdoorAir:Node.");
+            state, std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\": " + cAlphaFields(5) + "=\"" + AlphArray(5) + "\" is not an OutdoorAir:Node.");
         ShowContinueError(state, "Confirm that this is the intended source for the outdoor air stream.");
     }
     if (UtilityRoutines::SameString(AlphArray(6), "NoEconomizer")) {
@@ -2260,7 +2251,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
     } else if (UtilityRoutines::SameString(AlphArray(6), "ElectronicEnthalpy")) {
         state.dataMixedAir->OAController(OutAirNum).Econo = iEconoOp::ElectronicEnthalpy;
     } else {
-        ShowSevereError(state, CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(6) + "=\"" + AlphArray(6) + "\" value.");
+        ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(6) + "=\"" + AlphArray(6) + "\" value.");
         ErrorsFound = true;
     }
     // Bypass choice - Added by Amit for new feature implementation
@@ -2269,7 +2260,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
     } else if (UtilityRoutines::SameString(AlphArray(7), "MinimumFlowWithBypass")) {
         state.dataMixedAir->OAController(OutAirNum).EconBypass = true;
     } else {
-        ShowSevereError(state, CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(7) + "=\"" + AlphArray(7) + "\" value.");
+        ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(7) + "=\"" + AlphArray(7) + "\" value.");
         ErrorsFound = true;
     }
 
@@ -2280,7 +2271,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
     } else if (UtilityRoutines::SameString(AlphArray(9), "LockoutWithCompressor")) {
         state.dataMixedAir->OAController(OutAirNum).Lockout = iLockoutType::LockoutWithCompressorPossible;
     } else {
-        ShowSevereError(state, CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(9) + "=\"" + AlphArray(9) + "\" value.");
+        ShowSevereError(state, std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(9) + "=\"" + AlphArray(9) + "\" value.");
         ErrorsFound = true;
     }
     if (UtilityRoutines::SameString(AlphArray(10), "FixedMinimum")) {
@@ -2315,7 +2306,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
         state.dataMixedAir->OAController(OutAirNum).EnthalpyCurvePtr = GetCurveIndex(state, AlphArray(8)); // convert curve name to number
         if (state.dataMixedAir->OAController(OutAirNum).EnthalpyCurvePtr == 0) {
             ShowSevereError(state,
-                            CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(8) + "=\"" + AlphArray(8) + "\" not found.");
+                            std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(8) + "=\"" + AlphArray(8) + "\" not found.");
             ErrorsFound = true;
         } else {
             // Verify Curve Object, only legal types are Quadratic and Cubic
@@ -2351,7 +2342,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
     state.dataMixedAir->OAController(OutAirNum).MinOASchPtr = GetScheduleIndex(state, AlphArray(11));
     if (state.dataMixedAir->OAController(OutAirNum).MinOASchPtr == 0 && (!lAlphaBlanks(11))) {
         ShowSevereError(state,
-                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(11) + "=\"" + AlphArray(11) + "\" not found.");
+                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(11) + "=\"" + AlphArray(11) + "\" not found.");
         ErrorsFound = true;
     }
 
@@ -2360,7 +2351,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
     state.dataMixedAir->OAController(OutAirNum).MinOAflowSchPtr = GetScheduleIndex(state, AlphArray(12));
     if (state.dataMixedAir->OAController(OutAirNum).MinOAflowSchPtr == 0 && (!lAlphaBlanks(12))) {
         ShowSevereError(state,
-                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(12) + "=\"" + AlphArray(12) + "\" not found.");
+                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(12) + "=\"" + AlphArray(12) + "\" not found.");
         ErrorsFound = true;
     }
 
@@ -2368,7 +2359,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
     state.dataMixedAir->OAController(OutAirNum).MaxOAflowSchPtr = GetScheduleIndex(state, AlphArray(13));
     if (state.dataMixedAir->OAController(OutAirNum).MaxOAflowSchPtr == 0 && (!lAlphaBlanks(13))) {
         ShowSevereError(state,
-                        CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(13) + "=\"" + AlphArray(13) + "\" not found.");
+                        std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(13) + "=\"" + AlphArray(13) + "\" not found.");
         ErrorsFound = true;
     }
     state.dataMixedAir->OAController(OutAirNum).VentilationMechanicalName = AlphArray(14);
@@ -2473,7 +2464,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
 
         state.dataMixedAir->OAController(OutAirNum).HighRHOAFlowRatio = NumArray(7);
         if (state.dataMixedAir->OAController(OutAirNum).HighRHOAFlowRatio <= 0.0 && NumNums > 6) {
-            ShowWarningError(state, CurrentModuleObject + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\"");
+            ShowWarningError(state, std::string{CurrentModuleObject} + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\"");
             ShowContinueError(state, ' ' + cNumericFields(7) + " must be greater than 0.");
             ShowContinueError(state, ' ' + cNumericFields(7) + " is reset to 1 and the simulation continues.");
             state.dataMixedAir->OAController(OutAirNum).HighRHOAFlowRatio = 1.0;
@@ -2483,7 +2474,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
             if (state.dataMixedAir->OAController(OutAirNum).MaxOA > 0.0 && state.dataMixedAir->OAController(OutAirNum).MinOA != AutoSize) {
                 OAFlowRatio = state.dataMixedAir->OAController(OutAirNum).MinOA / state.dataMixedAir->OAController(OutAirNum).MaxOA;
                 if (state.dataMixedAir->OAController(OutAirNum).HighRHOAFlowRatio < OAFlowRatio) {
-                    ShowWarningError(state, CurrentModuleObject + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\"");
+                    ShowWarningError(state, std::string{CurrentModuleObject} + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\"");
                     ShowContinueError(state, "... A fixed minimum outside air flow rate and high humidity control have been specified.");
                     ShowContinueError(state,
                                       "... The " + cNumericFields(7) +
@@ -2505,7 +2496,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
             } else if (UtilityRoutines::SameString(AlphArray(18), "No")) {
                 state.dataMixedAir->OAController(OutAirNum).ModifyDuringHighOAMoisture = true;
             } else {
-                ShowSevereError(state, CurrentModuleObject + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
+                ShowSevereError(state, std::string{CurrentModuleObject} + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
                 ShowContinueError(state, "..." + cAlphaFields(18) + "=\"" + AlphArray(18) + "\" - valid values are \"Yes\" or \"No\".");
                 ErrorsFound = true;
             }
@@ -2514,7 +2505,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
                 state.dataMixedAir->OAController(OutAirNum).ModifyDuringHighOAMoisture = true;
             } else {
                 state.dataMixedAir->OAController(OutAirNum).ModifyDuringHighOAMoisture = false;
-                ShowWarningError(state, CurrentModuleObject + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", missing field value");
+                ShowWarningError(state, std::string{CurrentModuleObject} + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", missing field value");
                 ShowContinueError(state, "..." + cAlphaFields(18) + " will default to Yes when " + cAlphaFields(16) + "= \"Yes\"");
             }
         }
@@ -2522,18 +2513,18 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
     } else if (UtilityRoutines::SameString(AlphArray(16), "No") || lAlphaBlanks(16)) {
         if (NumAlphas >= 18) {
             if (!UtilityRoutines::SameString(AlphArray(18), "Yes") && !UtilityRoutines::SameString(AlphArray(18), "No")) {
-                ShowSevereError(state, CurrentModuleObject + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
+                ShowSevereError(state, std::string{CurrentModuleObject} + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
                 ShowContinueError(state, "..." + cAlphaFields(18) + "=\"" + AlphArray(18) + "\" - valid values are \"Yes\" or \"No\".");
                 ErrorsFound = true;
             }
         }
     } else { // Invalid field 16
-        ShowSevereError(state, CurrentModuleObject + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
+        ShowSevereError(state, std::string{CurrentModuleObject} + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
         ShowContinueError(state, "..." + cAlphaFields(16) + "=\"" + AlphArray(16) + "\" - valid values are \"Yes\" or \"No\".");
         ErrorsFound = true;
         if (NumAlphas >= 18) {
             if (!UtilityRoutines::SameString(AlphArray(18), "Yes") && !UtilityRoutines::SameString(AlphArray(18), "No")) {
-                ShowSevereError(state, CurrentModuleObject + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
+                ShowSevereError(state, std::string{CurrentModuleObject} + " \"" + state.dataMixedAir->OAController(OutAirNum).Name + "\", invalid field value");
                 ShowContinueError(state, "..." + cAlphaFields(18) + "=\"" + AlphArray(18) + "\" - valid values are \"Yes\" or \"No\".");
                 ErrorsFound = true;
             }
@@ -2548,7 +2539,7 @@ void ProcessOAControllerInputs(EnergyPlusData &state,
                 state.dataMixedAir->OAController(OutAirNum).HeatRecoveryBypassControlType = BypassWhenOAFlowGreaterThanMinimum;
             } else {
                 ShowWarningError(state,
-                                 CurrentModuleObject + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(19) + "=\"" + AlphArray(19) + "\".");
+                                 std::string{CurrentModuleObject} + "=\"" + AlphArray(1) + "\" invalid " + cAlphaFields(19) + "=\"" + AlphArray(19) + "\".");
                 ShowContinueError(state, "...assuming \"BypassWhenWithinEconomizerLimits\" and the simulation continues.");
                 state.dataMixedAir->OAController(OutAirNum).HeatRecoveryBypassControlType = BypassWhenWithinEconomizerLimits;
             }
@@ -2719,7 +2710,7 @@ void InitOAController(EnergyPlusData &state, int const OAControllerNum, bool con
                     ShowContinueError(state, "in list of valid OA Controllers.");
                     ErrorsFound = true;
                 }
-                thisNumForMixer = UtilityRoutines::FindItem(CurrentModuleObjects(CMO_OAMixer),
+                thisNumForMixer = UtilityRoutines::FindItem(CurrentModuleObjects[CMO_OAMixer],
                                                             state.dataAirLoop->OutsideAirSys(thisOASys).ComponentType,
                                                             isize(state.dataAirLoop->OutsideAirSys(thisOASys).ComponentType));
                 if (thisNumForMixer != 0) {
@@ -2963,7 +2954,7 @@ void InitOAController(EnergyPlusData &state, int const OAControllerNum, bool con
                 }
                 if (!FoundZone) {
                     ShowWarningError(state,
-                                     "Zone name = " + zone.Name + " in " + CurrentModuleObjects(CMO_MechVentilation) +
+                                     "Zone name = " + zone.Name + " in " + std::string{CurrentModuleObjects[CMO_MechVentilation]} +
                                          " object name = " + thisOAController.VentilationMechanicalName +
                                          " is not on the same air loop as Controller:OutdoorAir = " + thisOAController.Name);
                     ShowContinueError(state, "This zone will not be used and the simulation will continue...");
@@ -3039,7 +3030,7 @@ void InitOAController(EnergyPlusData &state, int const OAControllerNum, bool con
                 if (!FoundAreaZone) {
                     ShowWarningError(state,
                                      "Zone name = " + state.dataHeatBal->Zone(NumZone).Name + " is not accounted for by " +
-                                         CurrentModuleObjects(CMO_MechVentilation) + " object name = " + thisOAController.VentilationMechanicalName);
+                                         std::string{CurrentModuleObjects[CMO_MechVentilation]} + " object name = " + thisOAController.VentilationMechanicalName);
                     ShowContinueError(state, "Ventilation per unit floor area has not been specified for this zone, which is connected to");
                     ShowContinueError(state,
                                       "the air loop served by Controller:OutdoorAir = " + thisOAController.Name + ". Simulation will continue...");
@@ -3051,12 +3042,12 @@ void InitOAController(EnergyPlusData &state, int const OAControllerNum, bool con
                             if (!FoundAreaZone) {
                                 ShowWarningError(state,
                                                  "PEOPLE object for zone = " + state.dataHeatBal->Zone(NumZone).Name + " is not accounted for by " +
-                                                     CurrentModuleObjects(CMO_MechVentilation) +
+                                                     std::string{CurrentModuleObjects[CMO_MechVentilation]} +
                                                      " object name = " + thisOAController.VentilationMechanicalName);
                                 ShowContinueError(state,
                                                   "A \"PEOPLE\" object has been specified in the idf for this zone, but it is not included in this " +
-                                                      CurrentModuleObjects(CMO_MechVentilation) + " Object.");
-                                ShowContinueError(state, "Check " + CurrentModuleObjects(CMO_MechVentilation) + " object. Simulation will continue.");
+                                                      std::string{CurrentModuleObjects[CMO_MechVentilation]} + " Object.");
+                                ShowContinueError(state, "Check " + std::string{CurrentModuleObjects[CMO_MechVentilation]} + " object. Simulation will continue.");
                             }
                         }
                     }
@@ -3069,7 +3060,7 @@ void InitOAController(EnergyPlusData &state, int const OAControllerNum, bool con
                     }
                     if (!FoundAreaZone) {
                         ShowWarningError(state,
-                                         CurrentModuleObjects(CMO_MechVentilation) + " = \"" + thisOAController.VentilationMechanicalName +
+                                         std::string{CurrentModuleObjects[CMO_MechVentilation]} + " = \"" + thisOAController.VentilationMechanicalName +
                                              "\", Zone=\"" + state.dataHeatBal->Zone(NumZone).Name + "\".");
                         ShowContinueError(state,
                                           "No \"PEOPLE\" object has been specified in the idf for this zone, but the ventilation rate is > 0 in "
@@ -3473,7 +3464,7 @@ void InitOAController(EnergyPlusData &state, int const OAControllerNum, bool con
     }
 
     if (ErrorsFound) {
-        ShowFatalError(state, "Error in " + CurrentModuleObjects(CMO_OAController) + "; program terminated");
+        ShowFatalError(state, "Error in " + std::string{CurrentModuleObjects[CMO_OAController]} + "; program terminated");
     }
 } // namespace MixedAir
 
@@ -3583,7 +3574,7 @@ void OAControllerProps::CalcOAController(EnergyPlusData &state, int const AirLoo
 
     // SUBROUTINE PARAMETER DEFINITIONS:
     static constexpr std::string_view RoutineName("CalcOAController: ");
-    static std::string const CurrentModuleObject(CurrentModuleObjects(CMO_OAController));
+    static constexpr std::string_view CurrentModuleObject(CurrentModuleObjects[CMO_OAController]);
 
     // INTERFACE BLOCK SPECIFICATIONS
     // na
@@ -3919,7 +3910,7 @@ void VentilationMechanicalProps::CalcMechVentController(
     using Psychrometrics::PsyRhoAirFnPbTdbW;
 
     static constexpr std::string_view RoutineName("CalcMechVentController: ");
-    static std::string const CurrentModuleObject(CurrentModuleObjects(CMO_MechVentilation));
+    static constexpr std::string_view CurrentModuleObject(CurrentModuleObjects[CMO_MechVentilation]);
 
     // new local variables for DCV
     Real64 ZoneOAPeople; // Zone OA flow rate based on number of occupants [m3/s]
@@ -4187,7 +4178,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                         ZoneOAMin = ZoneOAMax;
                                         ++this->OAMaxMinLimitErrorCount;
                                         if (this->OAMaxMinLimitErrorCount < 2) {
-                                            ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + " = \"" + this->Name + "\".");
+                                            ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + " = \"" + this->Name + "\".");
                                             ShowContinueError(
                                                 state,
                                                 format("For System Outdoor Air Method = ProportionalControlBasedOnDesignOARate, maximum zone "
@@ -4201,7 +4192,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                         } else {
                                             ShowRecurringWarningErrorAtEnd(
                                                 state,
-                                                CurrentModuleObject + " = \"" + this->Name +
+                                                std::string{CurrentModuleObject} + " = \"" + this->Name +
                                                     "\", For System Outdoor Air Method = ProportionalControlBasedOnDesignOARate, maximum zone "
                                                     "outdoor air rate is not greater than minimum zone outdoor air rate. Error continues...",
                                                 this->OAMaxMinLimitErrorIndex);
@@ -4236,7 +4227,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                             ++this->CO2MaxMinLimitErrorCount;
                                             if (this->SystemOAMethod == SOAM_ProportionalControlSchOcc) {
                                                 if (this->CO2MaxMinLimitErrorCount < 2) {
-                                                    ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + " = \"" + this->Name + "\".");
+                                                    ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + " = \"" + this->Name + "\".");
                                                     ShowContinueError(
                                                         state,
                                                         format("For System Outdoor Air Method = ProportionalControlBasedOnOccupancySchedule, "
@@ -4251,7 +4242,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                                     ShowContinueErrorTimeStamp(state, "");
                                                 } else {
                                                     ShowRecurringWarningErrorAtEnd(state,
-                                                                                   CurrentModuleObject + " = \"" + this->Name +
+                                                                                   std::string{CurrentModuleObject} + " = \"" + this->Name +
                                                                                        "\", For System Outdoor Air Method = "
                                                                                        "ProportionalControlBasedOnOccupancySchedule, maximum "
                                                                                        "target CO2 concentration is not greater than minimum "
@@ -4261,7 +4252,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                             }
                                             if (this->SystemOAMethod == SOAM_ProportionalControlDesOcc) {
                                                 if (this->CO2MaxMinLimitErrorCount < 2) {
-                                                    ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + " = \"" + this->Name + "\".");
+                                                    ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + " = \"" + this->Name + "\".");
                                                     ShowContinueError(
                                                         state,
                                                         format("For System Outdoor Air Method = ProportionalControlBasedOnDesignOccupancy, "
@@ -4276,7 +4267,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                                     ShowContinueErrorTimeStamp(state, "");
                                                 } else {
                                                     ShowRecurringWarningErrorAtEnd(state,
-                                                                                   CurrentModuleObject + " = \"" + this->Name +
+                                                                                   std::string{CurrentModuleObject} + " = \"" + this->Name +
                                                                                        "\", For System Outdoor Air Method = "
                                                                                        "ProportionalControlBasedOnDesignOccupancy, maximum "
                                                                                        "target CO2 concentration is not greater than minimum "
@@ -4286,7 +4277,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                             }
                                             if (this->SystemOAMethod == SOAM_ProportionalControlDesOARate) {
                                                 if (this->CO2MaxMinLimitErrorCount < 2) {
-                                                    ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + " = \"" + this->Name + "\".");
+                                                    ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + " = \"" + this->Name + "\".");
                                                     ShowContinueError(
                                                         state,
                                                         format("For System Outdoor Air Method = ProportionalControlBasedOnDesignOARate, maximum "
@@ -4300,7 +4291,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                                     ShowContinueErrorTimeStamp(state, "");
                                                 } else {
                                                     ShowRecurringWarningErrorAtEnd(state,
-                                                                                   CurrentModuleObject + " = \"" + this->Name +
+                                                                                   std::string{CurrentModuleObject} + " = \"" + this->Name +
                                                                                        "\", For System Outdoor Air Method = "
                                                                                        "ProportionalControlBasedOnDesignOARate, maximum target "
                                                                                        "CO2 concentration is not greater than minimum target CO2 "
@@ -4333,7 +4324,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                             ++this->CO2GainErrorCount;
                                             if (this->SystemOAMethod == SOAM_ProportionalControlSchOcc) {
                                                 if (this->CO2GainErrorCount < 2) {
-                                                    ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + " = \"" + this->Name + "\".");
+                                                    ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + " = \"" + this->Name + "\".");
                                                     ShowContinueError(state,
                                                                       "For System Outdoor Air Method = "
                                                                       "ProportionalControlBasedOnOccupancySchedule, CO2 generation from people "
@@ -4347,7 +4338,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                                 } else {
                                                     ShowRecurringWarningErrorAtEnd(
                                                         state,
-                                                        CurrentModuleObject + " = \"" + this->Name +
+                                                        std::string{CurrentModuleObject} + " = \"" + this->Name +
                                                             "\", For System Outdoor Air Method = ProportionalControlBasedOnOccupancySchedule, "
                                                             "CO2 generation from people is not greater than zero. Error continues...",
                                                         this->CO2GainErrorIndex);
@@ -4355,7 +4346,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                             }
                                             if (this->SystemOAMethod == SOAM_ProportionalControlDesOcc) {
                                                 if (this->CO2GainErrorCount < 2) {
-                                                    ShowSevereError(state, std::string{RoutineName} + CurrentModuleObject + " = \"" + this->Name + "\".");
+                                                    ShowSevereError(state, std::string{RoutineName} + std::string{CurrentModuleObject} + " = \"" + this->Name + "\".");
                                                     ShowContinueError(state,
                                                                       "For System Outdoor Air Method = "
                                                                       "ProportionalControlBasedOnDesignOccupancy, CO2 generation from people is "
@@ -4369,7 +4360,7 @@ void VentilationMechanicalProps::CalcMechVentController(
                                                 } else {
                                                     ShowRecurringWarningErrorAtEnd(
                                                         state,
-                                                        CurrentModuleObject + " = \"" + this->Name +
+                                                        std::string{CurrentModuleObject} + " = \"" + this->Name +
                                                             "\", For System Outdoor Air Method = ProportionalControlBasedOnDesignOccupancy, CO2 "
                                                             "generation from people is not greater than zero. Error continues...",
                                                         this->CO2GainErrorIndex);
@@ -4514,7 +4505,7 @@ void OAControllerProps::CalcOAEconomizer(EnergyPlusData &state,
     using SetPointManager::GetCoilFreezingCheckFlag;
 
     static constexpr std::string_view RoutineName("CalcOAEconomizer: ");
-    static std::string const CurrentModuleObject(CurrentModuleObjects(CMO_OAController));
+    static constexpr std::string_view CurrentModuleObject(CurrentModuleObjects[CMO_OAController]);
     int const MaxIte(500);                 // Maximum number of iterations
     Real64 const Acc(0.0001);              // Accuracy of result
     bool AirLoopEconoLockout;              // Economizer lockout flag
@@ -4994,7 +4985,7 @@ void OAControllerProps::SizeOAController(EnergyPlusData &state)
     using WaterCoils::SetCoilDesFlow;
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const CurrentModuleObject(CurrentModuleObjects(CMO_OAController));
+    static constexpr std::string_view CurrentModuleObject(CurrentModuleObjects[CMO_OAController]);
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     Real64 OAFlowRatio;   // Used for error checking
@@ -5081,7 +5072,7 @@ void OAControllerProps::SizeOAController(EnergyPlusData &state)
             if (this->MaxOA > 0.0) {
                 OAFlowRatio = this->MinOA / this->MaxOA;
                 if (this->HighRHOAFlowRatio < OAFlowRatio) {
-                    ShowWarningError(state, CurrentModuleObject + " \"" + this->Name + "\"");
+                    ShowWarningError(state, std::string{CurrentModuleObject} + " \"" + this->Name + "\"");
                     ShowContinueError(state, "... A fixed minimum outdoor air flow rate and high humidity control have been specified.");
                     ShowContinueError(state,
                                       "... The High Humidity Outdoor Air Flow Ratio is less than the ratio of the outdoor air controllers "
@@ -6264,8 +6255,8 @@ void CheckControllerLists(EnergyPlusData &state, bool &ErrFound)
 
     // SUBROUTINE PARAMETER DEFINITIONS:
     static constexpr std::string_view RoutineName("CheckControllerLists");
-    static std::string const CurrentModuleObject("AirLoopHVAC:ControllerList");
-    static std::string const AirLoopObject("AirLoopHVAC");
+    static constexpr std::string_view CurrentModuleObject("AirLoopHVAC:ControllerList");
+    static constexpr std::string_view AirLoopObject("AirLoopHVAC");
 
     // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
     int NumAlphas;
@@ -6315,12 +6306,12 @@ void CheckControllerLists(EnergyPlusData &state, bool &ErrFound)
 
         if (Count == 0) {
             ShowSevereError(state,
-                            CurrentModuleObject + "=\"" + ControllerListName +
+                            std::string{CurrentModuleObject} + "=\"" + ControllerListName +
                                 "\" is not referenced on a AirLoopHVAC or AirLoopHVAC:OutdoorAirSystem object.");
             ErrFound = true;
         } else if (Count > 1) {
             ShowSevereError(state,
-                            CurrentModuleObject + "=\"" + ControllerListName +
+                            std::string{CurrentModuleObject} + "=\"" + ControllerListName +
                                 "\" has too many references on AirLoopHVAC or AirLoopHVAC:OutdoorAirSystem objects.");
             if (Found > 0) {
                 ShowContinueError(state, "...AirLoopHVAC:OutdoorAirSystem=\"" + state.dataAirLoop->OutsideAirSys(Found).Name + "\".");
@@ -6332,7 +6323,7 @@ void CheckControllerLists(EnergyPlusData &state, bool &ErrFound)
 }
 
 void CheckOAControllerName(
-    EnergyPlusData &state, std::string &OAControllerName, std::string const &ObjectType, std::string const &FieldName, bool &ErrorsFound)
+    EnergyPlusData &state, std::string &OAControllerName, std::string const &ObjectType, std::string_view FieldName, bool &ErrorsFound)
 {
 
     // SUBROUTINE INFORMATION:

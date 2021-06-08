@@ -67,8 +67,8 @@ namespace doj {
       works with ASCII digits.
       @return true if c is a digit character
       */
-    inline
-      bool alphanum_isdigit( const char c ) {
+    constexpr
+      bool alphanum_isdigit( const char c ) noexcept {
         return c >= '0' && c <= '9';
       }
 
@@ -85,20 +85,18 @@ namespace doj {
       it's own digit character handling which only works with ASCII
       digit characters, but provides better performance.
 
-      @param l NULL-terminated C-style string
-      @param r NULL-terminated C-style string
       @return negative if l<r, 0 if l equals r, positive if l>r
       */
     inline
-      int alphanum_impl( const char * l, const char * r ) {
+      int alphanum_impl( std::string_view l, std::string_view r ) {
         enum mode_t {
           STRING, NUMBER
         } mode = STRING;
 
-        while ( *l && *r ) {
+        while ( !l.empty() && !r.empty() ) {
           if ( mode == STRING ) {
             char l_char, r_char;
-            while ( ( l_char = *l ) && ( r_char = *r ) ) {
+            while ( ( l_char = l.front() ) && ( r_char = r.front() ) ) {
               // check if this are digit characters
               const bool l_digit = alphanum_isdigit( l_char ), r_digit = alphanum_isdigit( r_char );
               // if both characters are digits, we continue in NUMBER mode
@@ -115,8 +113,8 @@ namespace doj {
               // if they differ we have a result
               if ( diff != 0 ) return diff;
               // otherwise process the next characters
-              ++l;
-              ++r;
+              l.remove_prefix(1);
+              r.remove_prefix(1);
             }
           }
           else // mode==NUMBER
@@ -141,19 +139,19 @@ namespace doj {
             // to get shifted, eg "0012" will give 12
             // get the left number
             unsigned long l_int = 0;
-            while ( *l && alphanum_isdigit( *l ) ) {
+            while ( !l.empty() && alphanum_isdigit( l.front() ) ) {
               // TODO: this can overflow
-              l_int = l_int * 10 + *l - '0';
-              ++l;
+              l_int = l_int * 10 + l.front() - '0';
+              l.remove_prefix(1);
               ++l_len;
             }
 
             // get the right number
             unsigned long r_int = 0;
-            while ( *r && alphanum_isdigit( *r ) ) {
+            while ( !r.empty() && alphanum_isdigit( r.front() ) ) {
               // TODO: this can overflow
-              r_int = r_int * 10 + *r - '0';
-              ++r;
+              r_int = r_int * 10 + r.front() - '0';
+              r.remove_prefix(1);
               ++r_len;
             }
 #endif
@@ -176,8 +174,8 @@ namespace doj {
           }
         }
 
-        if ( *r ) return -1;
-        if ( *l ) return +1;
+        if ( !r.empty() ) return -1;
+        if ( !l.empty() ) return +1;
         return 0;
       }
 
@@ -228,55 +226,8 @@ namespace doj {
     @return negative if l<r, 0 if l==r, positive if l>r.
     */
   inline
-    int alphanum_comp( char * l, char * r ) {
-      assert( l );
-      assert( r );
+    int alphanum_comp( std::string_view l, std::string_view r ) {
       return alphanum_impl( l, r );
-    }
-
-  inline
-    int alphanum_comp( const char * l, const char * r ) {
-      assert( l );
-      assert( r );
-      return alphanum_impl( l, r );
-    }
-
-  inline
-    int alphanum_comp( char * l, const char * r ) {
-      assert( l );
-      assert( r );
-      return alphanum_impl( l, r );
-    }
-
-  inline
-    int alphanum_comp( const char * l, char * r ) {
-      assert( l );
-      assert( r );
-      return alphanum_impl( l, r );
-    }
-
-  inline
-    int alphanum_comp( const std::string & l, char * r ) {
-      assert( r );
-      return alphanum_impl( l.c_str(), r );
-    }
-
-  inline
-    int alphanum_comp( char * l, const std::string & r ) {
-      assert( l );
-      return alphanum_impl( l, r.c_str() );
-    }
-
-  inline
-    int alphanum_comp( const std::string & l, const char * r ) {
-      assert( r );
-      return alphanum_impl( l.c_str(), r );
-    }
-
-  inline
-    int alphanum_comp( const char * l, const std::string & r ) {
-      assert( l );
-      return alphanum_impl( l, r.c_str() );
     }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -296,9 +247,12 @@ namespace doj {
   template <>
     struct alphanum_less<void> {
       template<typename LHS, typename RHS>
-      bool operator()(const LHS& left, const RHS& right) const {
+      constexpr bool operator()(const LHS& left, const RHS& right) const {
         return alphanum_comp(left, right) < 0;
       }
+
+      // allow this to be a transparent comparator
+      using is_transparent = int;
     };
 
 }

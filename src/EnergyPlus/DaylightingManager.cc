@@ -10831,7 +10831,7 @@ void CheckForGeometricTransform(EnergyPlusData &state, bool &doTransform, Real64
     // SUBROUTINE ARGUMENT DEFINITIONS:
 
     // SUBROUTINE PARAMETER DEFINITIONS:
-    static std::string const CurrentModuleObject("GeometryTransform");
+    static constexpr std::string_view CurrentModuleObject("GeometryTransform");
 
     // INTERFACE BLOCK SPECIFICATIONS
     // na
@@ -10871,7 +10871,7 @@ void CheckForGeometricTransform(EnergyPlusData &state, bool &doTransform, Real64
         transformPlane = cAlphas(1);
         if (transformPlane != "XY") {
             ShowWarningError(state,
-                             CurrentModuleObject + ": invalid " + state.dataIPShortCut->cAlphaFieldNames(1) + "=\"" + cAlphas(1) + "...ignored.");
+                             std::string{CurrentModuleObject} + ": invalid " + state.dataIPShortCut->cAlphaFieldNames(1) + "=\"" + cAlphas(1) + "...ignored.");
         }
         doTransform = true;
         state.dataSurface->AspectTransform = true;
