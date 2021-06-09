@@ -16195,13 +16195,13 @@ class basic_json
     /// the template arguments passed to class @ref basic_json.
     /// @{
 
-#if defined(JSON_HAS_CPP_14)
+//#if defined(JSON_HAS_CPP_14)
     // Use transparent comparator if possible, combined with perfect forwarding
     // on find() and count() calls prevents unnecessary string construction.
-    using object_comparator_t = doj::alphanum_less<>;
-#else
-    using object_comparator_t = doj::alphanum_less<StringType>;
-#endif
+//    using object_comparator_t = doj::alphanum_less<>;
+//#else
+    using object_comparator_t = doj::alphanum_less<std::string_view>;
+//#endif
 
     /*!
     @brief a type for an object

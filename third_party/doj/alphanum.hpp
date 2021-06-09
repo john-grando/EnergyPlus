@@ -245,6 +245,17 @@ namespace doj {
     };
 
   template <>
+    struct alphanum_less<std::string_view> {
+      inline bool operator()(std::string_view left, std::string_view right) const {
+        return alphanum_comp(left, right) < 0;
+      }
+      //pretend to be transparent, to enable the templated .find functions
+      //but actually only support string_view, so that we save on strlen calculations
+      using is_transparent = int;
+    };
+
+
+  template <>
     struct alphanum_less<void> {
       template<typename LHS, typename RHS>
       constexpr bool operator()(const LHS& left, const RHS& right) const {
