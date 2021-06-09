@@ -1696,7 +1696,12 @@ namespace DataPlant {
                 switch (CurOpSchemeType) {
                 case DataPlant::WSEconOpSchemeType: //~ coils
                     this_comp.MyLoad = UpdatedDemandToLoopSetPoint;
-                    branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                    branch.Comp(CompCounter)
+                        .compPtr->simulate(state,
+                                           branch.Comp(CompCounter).location,
+                                           FirstHVACIteration,
+                                           branch.Comp(CompCounter).MyLoad,
+                                           branch.Comp(CompCounter).ON);
                     break;
                 case DataPlant::PumpOpSchemeType: //~ pump
                     if (this->BranchPumpsExist) {
@@ -1716,7 +1721,12 @@ namespace DataPlant {
                                                                         FirstHVACIteration,
                                                                         LoopShutDownFlag,
                                                                         LoadDistributionWasPerformed);
-                    branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                    branch.Comp(CompCounter)
+                        .compPtr->simulate(state,
+                                           branch.Comp(CompCounter).location,
+                                           FirstHVACIteration,
+                                           branch.Comp(CompCounter).MyLoad,
+                                           branch.Comp(CompCounter).ON);
                     break;
                 case DataPlant::EMSOpSchemeType:
                     if (this->myLoopSideNum == DataPlant::SupplySide) {
@@ -1734,14 +1744,24 @@ namespace DataPlant {
                                                                         FirstHVACIteration,
                                                                         LoopShutDownFlag,
                                                                         LoadDistributionWasPerformed);
-                    branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                    branch.Comp(CompCounter)
+                        .compPtr->simulate(state,
+                                           branch.Comp(CompCounter).location,
+                                           FirstHVACIteration,
+                                           branch.Comp(CompCounter).MyLoad,
+                                           branch.Comp(CompCounter).ON);
                     break;
                 default:
                     if ((CurOpSchemeType >= DataPlant::LoadRangeBasedMin) && (CurOpSchemeType <= DataPlant::LoadRangeBasedMax)) { //~ load range based
                         EncounteredLRBObjDuringPass1 = true;
                         goto components_end; // don't do any more components on this branch
                     } else {                 // demand, , etc.
-                        branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                        branch.Comp(CompCounter)
+                            .compPtr->simulate(state,
+                                               branch.Comp(CompCounter).location,
+                                               FirstHVACIteration,
+                                               branch.Comp(CompCounter).MyLoad,
+                                               branch.Comp(CompCounter).ON);
                     }
                 }
 
@@ -1787,7 +1807,12 @@ namespace DataPlant {
 
                 switch (CurOpSchemeType) {
                 case DataPlant::NoControlOpSchemeType: //~ pipes, for example
-                    branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                    branch.Comp(CompCounter)
+                        .compPtr->simulate(state,
+                                           branch.Comp(CompCounter).location,
+                                           FirstHVACIteration,
+                                           branch.Comp(CompCounter).MyLoad,
+                                           branch.Comp(CompCounter).ON);
                     break;
                 case DataPlant::DemandOpSchemeType:
                 case DataPlant::CompSetPtBasedSchemeType:
@@ -1819,7 +1844,12 @@ namespace DataPlant {
                                                                                 LoopShutDownFlag,
                                                                                 LoadDistributionWasPerformed);
                         }
-                        branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                        branch.Comp(CompCounter)
+                            .compPtr->simulate(state,
+                                               branch.Comp(CompCounter).location,
+                                               FirstHVACIteration,
+                                               branch.Comp(CompCounter).MyLoad,
+                                               branch.Comp(CompCounter).ON);
                     }
                 }
 
@@ -1855,7 +1885,12 @@ namespace DataPlant {
 
                 switch (CurOpSchemeType) {
                 case DataPlant::DemandOpSchemeType: //~ coils
-                    branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                    branch.Comp(CompCounter)
+                        .compPtr->simulate(state,
+                                           branch.Comp(CompCounter).location,
+                                           FirstHVACIteration,
+                                           branch.Comp(CompCounter).MyLoad,
+                                           branch.Comp(CompCounter).ON);
                     break;
                 case DataPlant::PumpOpSchemeType: //~ pump
                     PumpLocation.loopNum = this->myLoopNum;
@@ -1872,7 +1907,12 @@ namespace DataPlant {
                     if ((CurOpSchemeType >= DataPlant::LoadRangeBasedMin) && (CurOpSchemeType <= DataPlant::LoadRangeBasedMax)) { //~ load range based
                         ShowFatalError(state, "Encountered Load Based Object after other components, invalid.");
                     } else { //~ Typical control equipment
-                        branch.Comp(CompCounter).simulate(state, FirstHVACIteration);
+                        branch.Comp(CompCounter)
+                            .compPtr->simulate(state,
+                                               branch.Comp(CompCounter).location,
+                                               FirstHVACIteration,
+                                               branch.Comp(CompCounter).MyLoad,
+                                               branch.Comp(CompCounter).ON);
                     }
                 }
 

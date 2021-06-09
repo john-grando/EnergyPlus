@@ -123,8 +123,6 @@ namespace DataPlant {
         //                with initLoopEquip is called for only that plant loop. For a example, a chiller only calls its sizing routine when called
         //                from a the chilled water loop and does not call it sizing routine when called from the condenser loop.
 
-        void simulate(EnergyPlusData &state, bool FirstHVACIteration);
-
         bool isPump();
     };
 } // namespace DataPlant

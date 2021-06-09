@@ -79,55 +79,5 @@ namespace DataPlant {
         }
     }
 
-    void CompData::simulate(EnergyPlusData &state, bool const FirstHVACIteration)
-    {
-
-        // SUBROUTINE INFORMATION:
-        //       AUTHOR         Dan Fisher
-        //       DATE WRITTEN   July 1998
-        //       MODIFIED       June 2000  -Brandon Anderson
-        //                             Changed to Group Similar Components.  Components will
-        //                         be defined by ComponentType:SpecificComponent.
-        //                         The colon will act as the type delimeter, So all
-        //                         components of one type will be grouped. ex.(Boilers,Chillers)
-        //                       May 2003 - Simon Rees
-        //                         Added initial loop to force free cooling chiller etc to be
-        //                         simulated before other components.
-        //       RE-ENGINEERED  na
-
-        // PURPOSE OF THIS SUBROUTINE:
-        // This subroutine calls the appropriate routines to simulate
-        // the equipment on the plant.
-
-        // METHODOLOGY EMPLOYED:
-        // This subroutine employs a rule-based
-        // scheme to operate the plant equipment simulation without
-        // requiring a detailed flow network solver.  The scheme is based
-        // on several restrictive assumptions which may be relaxed when
-        // a more detailed solution technique is developed.  The current
-        // assumptions are:
-        //    1.   All loop cooling/heating equipment is connected
-        //         in parallel.
-        //    2.   Only one circulation pump may be specified per loop.
-        //    3.   The circulation pump must be specified first in the
-        //         simulation order and is assumed to be connected in
-        //         series with the cooling/heating equipment.
-        //    4.   The Circ. pump determines the maximum flow rate for
-        //         the loop.
-        // The scheme is valid only for Part Load based plant equipment
-        // models (currently the only type implemented).  Each equipment
-        // simulation updates its outlet node temperature, estimates its
-        // flow rate and returns a remaining loop demand which is passed
-        // on to the other available equipment.
-
-        // NOTE: All Equipment return the index of their lists during "InitLoopEquip"
-        // as a time reduction measure.  Specific ifs are set to catch those modules that don't.
-        // If you add a module or new equipment type, you must set up this structure.
-
-        // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
-
-        this->compPtr->simulate(state, this->location, FirstHVACIteration, this->MyLoad, this->ON);
-    }
-
 } // namespace DataPlant
 } // namespace EnergyPlus
