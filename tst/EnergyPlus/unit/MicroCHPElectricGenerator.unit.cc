@@ -307,7 +307,7 @@ TEST_F(EnergyPlusFixture, MicroCHPTest_InitGeneratorDynamics)
     MicroCHP1.initLoopEquip(*state, GetCompSizFac);
     MicroCHP1.compPtr->simulate(*state, MicroCHP1.location, FirstHVACIteration, MicroCHP1.MyLoad, MicroCHP1.ON);
     MicroCHP2.initLoopEquip(*state, GetCompSizFac);
-    MicroCHP1.compPtr->simulate(*state, MicroCHP1.location, FirstHVACIteration, MicroCHP1.MyLoad, MicroCHP1.ON);
+    MicroCHP2.compPtr->simulate(*state, MicroCHP2.location, FirstHVACIteration, MicroCHP2.MyLoad, MicroCHP2.ON);
     EXPECT_EQ(state->dataGenerator->GeneratorDynamics(1).Name, MicroCHP1.Name);
     EXPECT_EQ(state->dataGenerator->GeneratorDynamics(2).Name, MicroCHP2.Name);
 }
