@@ -656,7 +656,11 @@ bool KivaManager::setupKivaInstances(EnergyPlusData &state)
         state.dataZoneCtrls->GetZoneAirStatsInputFlag = false;
     }
 
+    auto start = std::chrono::high_resolution_clock::now();
     readWeatherData(state);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration<double>(stop - start);
+    std::cout << "Time taken by KivaManager::readWeatherData function: " << duration.count() << " seconds" << std::endl;
 
     auto &Surfaces = state.dataSurface->Surface;
     auto &Constructs = state.dataConstruction->Construct;

@@ -1988,7 +1988,11 @@ namespace WeatherManager {
             // this is done only once
             if (state.dataWeatherManager->WaterMainsTempsMethod == WaterMainsTempCalcMethod::CorrelationFromWeatherFile) {
                 if (!state.dataWeatherManager->OADryBulbAverage.OADryBulbWeatherDataProcessed) {
+                    auto start = std::chrono::high_resolution_clock::now();
                     state.dataWeatherManager->OADryBulbAverage.CalcAnnualAndMonthlyDryBulbTemp(state);
+                    auto stop = std::chrono::high_resolution_clock::now();
+                    auto duration = std::chrono::duration<double>(stop - start);
+                    std::cout << "Time taken by OADryBulbAverage.CalcAnnualAndMonthlyDryBulbTemp function: " << duration.count() << " seconds" << std::endl;
                 }
             }
             // reports to eio file
@@ -9341,7 +9345,7 @@ namespace WeatherManager {
         if (!this->OADryBulbWeatherDataProcessed) {
             const auto statFileExists = FileSystem::fileExists(state.files.inputWeatherFilePath.filePath);
             const auto epwFileExists = FileSystem::fileExists(state.files.inputWeatherFilePath.filePath);
-            if (statFileExists) {
+            if (false) { // temporarily ensure we don't use stat file
                 auto statFile = state.files.inputWeatherFilePath.try_open();
                 if (!statFile.good()) {
                     ShowSevereError(state,
